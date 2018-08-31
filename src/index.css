@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css?family=Hind+Madurai');
+
+body {
+	font-family: 'Hind Madurai', sans-serif;
+	text-align: center;
+	--colour: rgba(30, 22, 54, 0.6);
+}
+
+h1, h2 {
+	margin: 0;
+	padding: 0;
+}
+
+button {
+	font-family: 'Hind Madurai', sans-serif;
+	font-size: 1rem;
+	border: 1px solid var(--colour);
+	border-radius: 2px;
+	color: var(--colour);
+	background-color: white;
+	box-shadow: none;
+}
+
+button:hover {
+	color: white;
+	background-color: var(--colour);
+}
+
+.game-container {
+	padding: 1rem;
+}
+
+.player-list-selected {
+	margin-top: 2rem;
+}
+
+.player-list-selected ul {
+	list-style-type: square;
+}
+
+.player-button,
+.player-list-selected button {
+	padding: 0.5rem;
+	margin: 0.1rem;
+}
+
+.start-button {
+	padding: 1.5rem 2rem;
+	margin-top: 3rem;
+	font-size: 1.5rem;
+}
+
+.player-list {
+	margin: auto;
+	margin-top: 1rem;
+	width: 18rem;
+}
+
+.player-list ul {
+	text-align: left;
+	list-style: none;
+}
+
+.player-list li {
+	margin-bottom: 0.5rem;
+}
+
+.player { /* Container for player info (disk color, name) */
+	font-size: 1.5rem;
+}
+
+.player svg { /* Korona disk */
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 0.5rem;
+}
