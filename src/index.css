@@ -53,12 +53,13 @@ button:hover {
 .player-list {
 	margin: auto;
 	margin-top: 1rem;
-	width: 18rem;
+	width: 20rem;
 }
 
 .player-list ul {
 	text-align: left;
 	list-style: none;
+	margin-top: 1.5rem;
 }
 
 .player-list li {
@@ -67,6 +68,7 @@ button:hover {
 
 .player { /* Container for player info (disk color, name) */
 	font-size: 1.5rem;
+	padding-left: 1rem;
 }
 
 .player svg { /* Korona disk */
