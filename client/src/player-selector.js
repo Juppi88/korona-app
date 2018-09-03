@@ -21,7 +21,20 @@ class PlayerSelector extends React.Component
 
 		this.state = {
 			players: Array(0),
+			available: Array(0),
 		};
+
+		var instance = this;
+
+		// Fetch the list of active names from the Node.js server.
+		fetch('/api/names')
+			.then(function(response) {
+				return response.json();
+			}).then(function(json) {
+				instance.setState( { available: json.names } );
+			}).catch(function(ex) {
+			}
+		);
 	}
 
 	renderButton(name, index)
@@ -97,7 +110,7 @@ class PlayerSelector extends React.Component
 	render()
 	{
 		// Pre-defined list of names for regular players.
-		var names = [ "Jari", "Miikka", "Tommi", "Tommy", "Tuomas", "Tuomo" ];
+		var names = this.state.available;
 
 		// Compile a list of selected players.
 		const players = this.state.players;

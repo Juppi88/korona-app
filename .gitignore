@@ -21,3 +21,6 @@ yarn-debug.log*
 yarn-error.log*
 
 *.lock
+*-lock.json
+*.db
+*.db-journal
