@@ -24,14 +24,42 @@ class PlayerSelector extends React.Component
 			available: Array(0),
 		};
 
+		// Fetch the list of active names from the Node.js server.
+		this.fetchNamesFromDatabase();
+	}
+
+	fetchNamesFromDatabase()
+	{
 		var instance = this;
 
-		// Fetch the list of active names from the Node.js server.
 		fetch('/api/names')
 			.then(function(response) {
 				return response.json();
 			}).then(function(json) {
-				instance.setState( { available: json.names } );
+				instance.setState({ available: json.names });
+			}).catch(function(ex) {
+			}
+		);
+	}
+
+	addNameToDatabase(name)
+	{
+		var instance = this;
+
+		// Add the name to the list of active players and re-render.
+		fetch('/api/names', {
+				method: "PUT",
+				body: JSON.stringify({ name: name }),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			})
+			.then(function(response) {
+				return response.json();
+			}).then(function(json) {
+				// The backend responds with the updated list of available names.
+				instance.setState({ available: json.names });
 			}).catch(function(ex) {
 			}
 		);
@@ -63,26 +91,11 @@ class PlayerSelector extends React.Component
 		var name = prompt("Anna pelaajan nimi", "");
 
 		if (name) {
+			// Add the new player to the game.
 			this.addPlayer(name);
 
-			var instance = this;
-
-			// Add the name to the list of active players and re-render.
-			fetch('/api/names', {
-					method: "PUT",
-					body: JSON.stringify({ name: name }),
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					}
-				})
-				.then(function(response) {
-					return response.json();
-				}).then(function(json) {
-					instance.setState( { available: json.names } );
-				}).catch(function(ex) {
-				}
-			);
+			// Add the new name to the database so it is available in future games as well.
+			this.addNameToDatabase(name);
 		}
 	}
 
@@ -104,11 +117,22 @@ class PlayerSelector extends React.Component
 	removePlayer(index)
 	{
 		const players = this.state.players;
+		const available = this.state.available;
 
-		// Remove the player at the given index and update the state of the player selector.
 		if (index < players.length) {
-			players.splice(index, 1);
-			this.setState( { players: players } );
+
+			// Remove the player at the given index
+			var removed = players.splice(index, 1)[0];
+
+			// Move the removed player back to the list of available names.
+			available.push(removed);
+			available.sort();
+
+			// Update the state.
+			this.setState({
+				players: players,
+				available: available
+			});
 		}
 	}
 

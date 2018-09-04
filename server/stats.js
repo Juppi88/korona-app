@@ -12,9 +12,9 @@ module.exports.setupDatabase = function()
 		return;
 	}
 
-	// Ensure the database has the necessary tables.		
+	// Ensure the database has the necessary tables.
 	var statement = db.prepare("CREATE TABLE IF NOT EXISTS names (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT);");
-		
+
 	if (statement != null) {
 		statement.run()
 		statement.finalize();
@@ -39,9 +39,12 @@ module.exports.getNames = function()
 	}
 
 	db.each("SELECT id, name FROM names",
+		
 		(err, row) => {
-			names.push(row.name);
-			names.sort();
+			if (row && row.name) {
+				names.push(row.name);
+				names.sort();
+			}
 		}
 	);
 
