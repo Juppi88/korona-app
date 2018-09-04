@@ -64,6 +64,25 @@ class PlayerSelector extends React.Component
 
 		if (name) {
 			this.addPlayer(name);
+
+			var instance = this;
+
+			// Add the name to the list of active players and re-render.
+			fetch('/api/names', {
+					method: "PUT",
+					body: JSON.stringify({ name: name }),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				})
+				.then(function(response) {
+					return response.json();
+				}).then(function(json) {
+					instance.setState( { available: json.names } );
+				}).catch(function(ex) {
+				}
+			);
 		}
 	}
 

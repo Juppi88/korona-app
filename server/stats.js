@@ -3,7 +3,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const DatabaseName = "stats.db";
 
-var names;
+var names = [];
 
 module.exports.setupDatabase = function()
 {
@@ -41,6 +41,7 @@ module.exports.getNames = function()
 	db.each("SELECT id, name FROM names",
 		(err, row) => {
 			names.push(row.name);
+			names.sort();
 		}
 	);
 
@@ -49,3 +50,30 @@ module.exports.getNames = function()
 	return names;
 };
 
+module.exports.addName = function(name)
+{
+	// Make sure the name isn't already on the list.
+	if (names.indexOf(name) >= 0) {
+		return names;
+	}
+
+	// Add the new name to the list.
+	names.push(name);
+
+	// Sort the names alphabetically.
+	names.sort();
+
+	// Add the new name to the database.
+	let db = new sqlite3.Database(DatabaseName);
+	if (db != null) {
+		
+		var statement = db.prepare("INSERT INTO names (name) VALUES ('" + name + "');");
+		statement.run();
+		statement.finalize();
+
+		db.close();
+
+	}
+
+	return names;
+};
