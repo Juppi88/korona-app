@@ -22,6 +22,12 @@ class PlayerList extends React.Component
 		};
 	}
 
+	startNewGame()
+	{
+		// Call the game finished method of the Game class.
+		this.props.onFinished();
+	}
+
 	renderDisc(size, colour)
 	{
 		var strokeWidth = 1;
@@ -63,9 +69,14 @@ class PlayerList extends React.Component
 		}
 
 		return (
-			<div className="player-list">
-				<h1>Pelaajat</h1>
-				<ul>{playerList}</ul>
+			<div className="player-list-container">
+				<div className="player-list">
+					<h1>Pelaajat</h1>
+					<ul>{playerList}</ul>
+				</div>
+				<div className="bottom-menu">
+					<button onClick={() => this.startNewGame()} className="start-button">Uusi peli</button>
+				</div>
 			</div>
 		);
 	}

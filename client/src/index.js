@@ -7,8 +7,7 @@ import './index.css';
 // --------------------------------------------------------------------------------
 
 const STATE_PLAYERS = 0; // Selecting players
-const STATE_ORDER = 1; // Determining the order of players
-const STATE_STARTED = 2; // Game has started
+const STATE_GAME = 1; // Game started, displaying the player list
 
 const COLOUR_NONE = -1;
 const COLOUR_RED = 0;
@@ -103,8 +102,16 @@ class Game extends React.Component
 
 		// Store the list of players and determine the order of players.
 		this.setState({
-			state: STATE_ORDER,
+			state: STATE_GAME,
 			players: players,
+		});
+	}
+
+	onGameFinished()
+	{
+		this.setState({
+			state: STATE_PLAYERS,
+			players: []
 		});
 	}
 
@@ -112,14 +119,13 @@ class Game extends React.Component
 	{
 		switch (this.state.state) {
 
-		case STATE_ORDER: // Render the player list.
-		case STATE_STARTED:
+		case STATE_GAME: // Render the player list.
 			
 			const players = this.state.players;
 
 			return (
 				<div className="game-container">
-					<PlayerList players={players}/>
+					<PlayerList players={players} onFinished={ this.onGameFinished.bind(this) }/>
 				</div>
 			);
 
