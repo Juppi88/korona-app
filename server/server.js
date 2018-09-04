@@ -23,6 +23,20 @@ app.put("/api/names", (req, res) => {
 	res.send({ names: names });
 });
 
+app.put("/api/game", (req, res) => {
+
+	var gameIndex = 0;
+
+	// Validate the data. If it has the required fields, save the game data to the log and return the log index.
+	if (req.body.hasOwnProperty("players") &&
+		req.body.hasOwnProperty("starter")) {
+
+		gameIndex = stats.saveGameToLog(req.body);
+	}
+
+	res.send({ gameIndex: gameIndex });
+});
+
 // Create an SQLite database for stats and other information.
 stats.setupDatabase();
 
@@ -30,6 +44,3 @@ stats.setupDatabase();
 stats.getNames();
 
 app.listen(port, () => console.log("API server listening on port " + port));
-
-
-

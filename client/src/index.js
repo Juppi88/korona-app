@@ -29,6 +29,7 @@ class Game extends React.Component
 		this.state = {
 			state: STATE_PLAYERS,
 			players: null,
+			gameIndex: 0
 		};
 	}
 
@@ -105,6 +106,8 @@ class Game extends React.Component
 			state: STATE_GAME,
 			players: players,
 		});
+
+		this.saveGameToDatabase(players);
 	}
 
 	onGameFinished()
@@ -113,6 +116,55 @@ class Game extends React.Component
 			state: STATE_PLAYERS,
 			players: []
 		});
+	}
+
+	saveGameToDatabase(playerInfo)
+	{
+		var instance = this;
+
+		// Copy the players to colour-sorted array.
+		var players = Array(4);
+		var starter = -1;
+
+		for (var i = 0, c = playerInfo.length; i < c; i++) {
+
+			const player = playerInfo[i];
+
+			// Copy the name of the player to the colour sorted array.
+			if (player.colour >= 0 && player.colour < players.length) {
+				players[player.colour] = player.name;
+
+				// Store the colour of the first player.
+				if (player.isStarter) {
+					starter = player.colour;
+				}
+			}
+		}
+
+		// Save the game info to the log using the PUT method for games.
+		fetch('/api/game', {
+				method: "PUT",
+				body: JSON.stringify({
+					players: players,
+					starter: starter
+				}),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			})
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(json) {
+				// The backend responds with the log index of the started game.
+				// The index is used to store additional info about the game, such as the winner.
+				instance.setState({ gameIndex: json.gameIndex });
+			})
+			.catch(function(ex) {
+				console.log(ex)
+			}
+		);
 	}
 
 	render()
