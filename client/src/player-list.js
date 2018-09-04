@@ -43,16 +43,46 @@ class PlayerList extends React.Component
 		);
 	}
 
+	renderStar()
+	{
+		return (
+			<svg height="25" width="25">
+				<polygon points="12.5,0 15,10 25,10 17.5,15 20,25 12.5,20 5,25 7.5,15 0,10 10,10" fill="yellow" stroke="orange" strokeWidth="2" fillRule="nonzero"/>
+			</svg>
+		);
+	}
+
 	renderPlayer(index)
 	{
 		const player = this.state.players[index];
 
 		return (
-			<div className="player">
+			<div className="player" onClick={() => this.setPlayerWinner(index)}>
+
 				{this.renderDisc(50, Colours[player.colour])}
-				<span>{player.name} {player.isStarter ? "(Aloittaja)" : ""}</span>
+				<span className={player.isWinner ? "winner" : "loser"}>
+					{player.name}
+					{player.isStarter && !player.isWinner ? " (Aloittaja)" : ""}
+					{player.isWinner ? this.renderStar() : ""}
+				</span>
+
 			</div>
 		);
+	}
+
+	setPlayerWinner(index)
+	{
+		const players = this.state.players;
+
+		if (index < 0 || index >= players.length) {
+			return;
+		}
+		
+		// Toggle the winner flag.
+		players[index].isWinner = !players[index].isWinner;
+
+		// Update the state of the player list.
+		this.setState({ players: players });
 	}
 
 	render()

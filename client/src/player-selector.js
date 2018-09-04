@@ -149,7 +149,7 @@ class PlayerSelector extends React.Component
 		// Pass the list of selected players to the Game class.
 		this.props.onReady(players);
 	}
-
+	
 	render()
 	{
 		// Pre-defined list of names for regular players.

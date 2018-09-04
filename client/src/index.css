@@ -73,19 +73,31 @@ button:hover {
 	margin-top: 1.5rem;
 }
 
-.player-list li {
-	margin-bottom: 0.5rem;
-}
-
 .player { /* Container for player info (disk color, name) */
 	font-size: 1.5rem;
+	padding: 0.4rem;
 	padding-left: 1rem;
+}
+
+.player:hover {
+	color: white;
+	background-color: var(--colour);
+	cursor: pointer;
 }
 
 .player svg { /* Korona disk */
 	display: inline-block;
 	vertical-align: middle;
 	margin-right: 0.5rem;
+}
+
+.player .winner {
+	font-style: italic;
+}
+
+.player .winner svg {
+	margin-left: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
 .bottom-menu { /* Controls on the bottom right side of the screen (new game etc.) */

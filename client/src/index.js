@@ -91,6 +91,7 @@ class Game extends React.Component
 				name: names[i],
 				colour: COLOUR_NONE,
 				isStarter: false,
+				isWinner: false,
 			};
 		}
 
