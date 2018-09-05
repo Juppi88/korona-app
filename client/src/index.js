@@ -29,7 +29,7 @@ class Game extends React.Component
 		this.state = {
 			state: STATE_PLAYERS,
 			players: null,
-			gameIndex: 0
+			gameStarted: 0,
 		};
 	}
 
@@ -80,7 +80,7 @@ class Game extends React.Component
 		);
 	}
 
-	onPlayerListReady(names)
+	onGameStarted(names)
 	{
 		// Fill in and store player info.
 		const players = Array(names.length);
@@ -95,6 +95,7 @@ class Game extends React.Component
 			};
 		}
 
+		// Randomize colours for each player.
 		this.randomizeColours(players);
 
 		// Ask the user whether the first player of the game should be randomized.
@@ -102,31 +103,43 @@ class Game extends React.Component
 			this.randomizeStarter(players);
 		}
 
-		// Store the list of players and determine the order of players.
+		// Save the list of players in the game and time for the game start.
+		var timestamp = Math.floor(new Date() / 1000);
+
 		this.setState({
 			state: STATE_GAME,
 			players: players,
+			gameStarted: timestamp
 		});
-
-		this.saveGameInfoToLog(players);
 	}
 
-	onGameFinished(winners)
+	onGameFinished(players)
 	{
-		// Save the game winners to the log when selected.
-		if (winners.length > 0) {
-			this.saveGameResultsToLog(winners);
+		// Compile a list of winners for the game.
+		var winners = [];
+
+		for (var i = 0, c = players.length; i < c; i++) {
+
+			if (players[i].isWinner && players[i].colour !== COLOUR_NONE) {
+				winners.push(players[i].colour);
+			}
 		}
 
+		// Save game info into the log when the winners have been selected.
+		if (winners.length > 0) {
+			this.saveGameResultsToLog(players, winners);
+		}
+
+		// Reset the state and go back to player selection.
 		this.setState({
 			state: STATE_PLAYERS,
 			players: []
 		});
 	}
 
-	saveGameInfoToLog(playerInfo)
+	saveGameResultsToLog(playerInfo, winners)
 	{
-		var instance = this;
+		var timestamp = Math.floor(new Date() / 1000);
 
 		// Copy the players to colour-sorted array.
 		var players = Array(4);
@@ -138,6 +151,7 @@ class Game extends React.Component
 
 			// Copy the name of the player to the colour sorted array.
 			if (player.colour >= 0 && player.colour < players.length) {
+
 				players[player.colour] = player.name;
 
 				// Store the colour of the first player.
@@ -152,34 +166,9 @@ class Game extends React.Component
 				method: "PUT",
 				body: JSON.stringify({
 					players: players,
-					starter: starter
-				}),
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}
-			})
-			.then(function(response) {
-				return response.json();
-			})
-			.then(function(json) {
-				// The backend responds with the log index of the started game.
-				// The index is used to store additional info about the game, such as the winner.
-				instance.setState({ gameIndex: json.gameIndex });
-			})
-			.catch(function(ex) {
-				console.log(ex)
-			}
-		);
-	}
-
-	saveGameResultsToLog(winners)
-	{
-		// Save the game info to the log using the PUT method for games.
-		fetch('/api/game', {
-				method: "POST",
-				body: JSON.stringify({
-					gameIndex: this.state.gameIndex,
+					starter: starter,
+					startTime: this.state.gameStarted,
+					endTime: timestamp,
 					winners: winners
 				}),
 				headers: {
@@ -207,7 +196,7 @@ class Game extends React.Component
 		default: // Render the player selector.
 			return (
 				<div className="game-container">
-					<PlayerSelector onReady={ this.onPlayerListReady.bind(this) }/>
+					<PlayerSelector onReady={ this.onGameStarted.bind(this) }/>
 				</div>
 			);
 		}

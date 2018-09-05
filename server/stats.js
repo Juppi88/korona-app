@@ -158,18 +158,26 @@ module.exports.saveGameToLog = function(game)
 		game.starter = -1;
 	}
 
-	var timestamp = Math.floor(new Date() / 1000);
+	// Save the winners as flags to save space.
+	var winnerFlags = 0;
+
+	for (var i = 0, c = game.winners.length; i < c; i++) {
+
+		if (game.winners[i] >= 0 && game.winners[i] < 4) {
+			winnerFlags |= (1 << game.winners[i]);
+		}
+	}
 
 	// Add the new name to the database.
 	let db = new sqlite3.Database(DatabaseName);
 	if (db != null) {
 
-		var statement = db.prepare("INSERT INTO game_log (plr_red, plr_yellow, plr_green, plr_blue, first_player, time_started) VALUES (?, ?, ?, ?, ?, ?);");
+		var statement = db.prepare("INSERT INTO game_log (plr_red, plr_yellow, plr_green, plr_blue, first_player, winners, time_started, time_ended) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
-		statement.run(plrRed, plrYellow, plrGreen, plrBlue, game.starter, timestamp, function(err) {
+		statement.run(plrRed, plrYellow, plrGreen, plrBlue, game.starter, winnerFlags, game.startTime, game.endTime, function(err) {
 			
-			if (!err) {
-				previousLogIndex = this.lastID;
+			if (err) {
+				console.error("Could not save game stats: " + err);
 			}
 		});
 
@@ -180,36 +188,3 @@ module.exports.saveGameToLog = function(game)
 
 	return previousLogIndex + 1;
 };
-
-module.exports.saveGameResultsToLog = function(gameIndex, winners)
-{
-	if (gameIndex <= 0) {
-		return false;
-	}
-
-	var winnerFlags = 0;
-
-	// Save the winners as flags to save space.
-	for (var i = 0, c = winners.length; i < c; i++) {
-
-		if (winners[i] >= 0 && winners[i] < 4) {
-			winnerFlags |= (1 << winners[i]);
-		}
-	}
-
-	var timestamp = Math.floor(new Date() / 1000);
-
-	// Update the winners and 
-	let db = new sqlite3.Database(DatabaseName);
-	if (db != null) {
-
-		var statement = db.prepare("UPDATE game_log SET time_ended = ?, winners = ? WHERE id = ?;");
-
-		statement.run(timestamp, winnerFlags, gameIndex);
-		statement.finalize();
-
-		db.close();
-
-		return true;
-	}
-}

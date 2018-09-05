@@ -24,23 +24,24 @@ class PlayerList extends React.Component
 
 	startNewGame()
 	{
-		// Compile a list of winners.
+		// Ensure the winner(s) have been selected.
 		const players = this.state.players;
-		var winners = [];
+		var winnersSelected = false;
 
 		for (var i = 0, c = players.length; i < c; i++) {
-			if (players[i].isWinner && players[i].colour >= 0) {
-				winners.push(players[i].colour);
+			if (players[i].isWinner) {
+				winnersSelected = true;
+				break;
 			}
 		}
 
-		// Ask the user whether they really meant to start a new game if winners for the previous game have not been selected.
-		if (winners.length === 0 && !window.confirm("Voittajia ei ole vielä valittu. Haluatko varmasti aloittaa uuden pelin?")) {
+		// Ask the user whether they really meant to start a new game if winners for the previous game have not been selected yet.
+		if (!winnersSelected && !window.confirm("Voittajia ei ole vielä valittu. Haluatko varmasti aloittaa uuden pelin?")) {
 			return;
 		}
 
 		// Call the game finished method of the Game class.
-		this.props.onFinished(winners);
+		this.props.onFinished(players);
 	}
 
 	renderDisc(size, colour)
