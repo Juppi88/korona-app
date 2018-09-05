@@ -34,6 +34,11 @@ class PlayerList extends React.Component
 			}
 		}
 
+		// Ask the user whether they really meant to start a new game if winners for the previous game have not been selected.
+		if (winners.length === 0 && !window.confirm("Voittajia ei ole vielä valittu. Haluatko varmasti aloittaa uuden pelin?")) {
+			return;
+		}
+
 		// Call the game finished method of the Game class.
 		this.props.onFinished(winners);
 	}
@@ -99,8 +104,15 @@ class PlayerList extends React.Component
 	{
 		// Compile a list of players in the game.
 		var playerList = [];
+		var isWinnerMarked = false;
 
 		for (var i = 0; i < this.state.players.length; i++) {
+
+			// Remember that a winner (or winners) has been chosen.
+			if (this.state.players[i].isWinner) {
+				isWinnerMarked = true;
+			}
+
 			playerList.push( (
 				<li key={i}>
 					{this.renderPlayer(i)}
@@ -115,7 +127,7 @@ class PlayerList extends React.Component
 					<ul>{playerList}</ul>
 				</div>
 				<div className="bottom-menu">
-					<button onClick={() => this.startNewGame()} className="start-button">Uusi peli</button>
+					<button onClick={() => this.startNewGame()} className="start-button">{isWinnerMarked ? "Tallenna & Uusi Peli" : "Uusi Peli"}</button>
 				</div>
 			</div>
 		);

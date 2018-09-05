@@ -113,7 +113,10 @@ class Game extends React.Component
 
 	onGameFinished(winners)
 	{
-		this.saveGameResultsToLog(winners);
+		// Save the game winners to the log when selected.
+		if (winners.length > 0) {
+			this.saveGameResultsToLog(winners);
+		}
 
 		this.setState({
 			state: STATE_PLAYERS,
