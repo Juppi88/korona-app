@@ -3,6 +3,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const DatabaseName = "stats.db";
 
+// --------------------------------------------------------------------------------
+
 var names = [];
 var nameIndices = [];
 
@@ -31,7 +33,19 @@ module.exports.setupDatabase = function()
 		statement.finalize();
 	}
 
-	statement = db.prepare("CREATE TABLE IF NOT EXISTS game_log (id INTEGER PRIMARY KEY AUTOINCREMENT, plr_red INTEGER, plr_yellow INTEGER, plr_green INTEGER, plr_blue INTEGER, starter INTEGER, winner INTEGER, time_started INTEGER, time_ended INTEGER);");
+	statement = db.prepare(
+		`CREATE TABLE IF NOT EXISTS game_log (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			plr_red INTEGER DEFAULT 0,
+			plr_yellow INTEGER DEFAULT 0,
+			plr_green INTEGER DEFAULT 0,
+			plr_blue INTEGER DEFAULT 0,
+			first_player INTEGER DEFAULT -1,
+			winners INTEGER DEFAULT 0,
+			time_started INTEGER DEFAULT 0,
+			time_ended INTEGER DEFAULT 0
+		);`
+	);
 
 	if (statement != null) {
 		statement.run()
@@ -150,7 +164,7 @@ module.exports.saveGameToLog = function(game)
 	let db = new sqlite3.Database(DatabaseName);
 	if (db != null) {
 
-		var statement = db.prepare("INSERT INTO game_log (plr_red, plr_yellow, plr_green, plr_blue, starter, time_started) VALUES (?, ?, ?, ?, ?, ?);");
+		var statement = db.prepare("INSERT INTO game_log (plr_red, plr_yellow, plr_green, plr_blue, first_player, time_started) VALUES (?, ?, ?, ?, ?, ?);");
 
 		statement.run(plrRed, plrYellow, plrGreen, plrBlue, game.starter, timestamp, function(err) {
 			
@@ -166,3 +180,36 @@ module.exports.saveGameToLog = function(game)
 
 	return previousLogIndex + 1;
 };
+
+module.exports.saveGameResultsToLog = function(gameIndex, winners)
+{
+	if (gameIndex <= 0) {
+		return false;
+	}
+
+	var winnerFlags = 0;
+
+	// Save the winners as flags to save space.
+	for (var i = 0, c = winners.length; i < c; i++) {
+
+		if (winners[i] >= 0 && winners[i] < 4) {
+			winnerFlags |= (1 << winners[i]);
+		}
+	}
+
+	var timestamp = Math.floor(new Date() / 1000);
+
+	// Update the winners and 
+	let db = new sqlite3.Database(DatabaseName);
+	if (db != null) {
+
+		var statement = db.prepare("UPDATE game_log SET time_ended = ?, winners = ? WHERE id = ?;");
+
+		statement.run(timestamp, winnerFlags, gameIndex);
+		statement.finalize();
+
+		db.close();
+
+		return true;
+	}
+}

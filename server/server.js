@@ -37,6 +37,20 @@ app.put("/api/game", (req, res) => {
 	res.send({ gameIndex: gameIndex });
 });
 
+app.post("/api/game", (req, res) => {
+
+	var succeeded = false;
+
+	// Validate the data. If it has the required fields, update the game entry in the log table.
+	if (req.body.hasOwnProperty("gameIndex") &&
+		req.body.hasOwnProperty("winners")) {
+		
+		succeeded = stats.saveGameResultsToLog(req.body.gameIndex, req.body.winners);
+	}
+
+	res.send({ succeeded: succeeded });
+});
+
 // Create an SQLite database for stats and other information.
 stats.setupDatabase();
 

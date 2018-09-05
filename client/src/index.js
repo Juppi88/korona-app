@@ -108,18 +108,20 @@ class Game extends React.Component
 			players: players,
 		});
 
-		this.saveGameToDatabase(players);
+		this.saveGameInfoToLog(players);
 	}
 
-	onGameFinished()
+	onGameFinished(winners)
 	{
+		this.saveGameResultsToLog(winners);
+
 		this.setState({
 			state: STATE_PLAYERS,
 			players: []
 		});
 	}
 
-	saveGameToDatabase(playerInfo)
+	saveGameInfoToLog(playerInfo)
 	{
 		var instance = this;
 
@@ -164,6 +166,23 @@ class Game extends React.Component
 			})
 			.catch(function(ex) {
 				console.log(ex)
+			}
+		);
+	}
+
+	saveGameResultsToLog(winners)
+	{
+		// Save the game info to the log using the PUT method for games.
+		fetch('/api/game', {
+				method: "POST",
+				body: JSON.stringify({
+					gameIndex: this.state.gameIndex,
+					winners: winners
+				}),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
 			}
 		);
 	}

@@ -24,8 +24,18 @@ class PlayerList extends React.Component
 
 	startNewGame()
 	{
+		// Compile a list of winners.
+		const players = this.state.players;
+		var winners = [];
+
+		for (var i = 0, c = players.length; i < c; i++) {
+			if (players[i].isWinner && players[i].colour >= 0) {
+				winners.push(players[i].colour);
+			}
+		}
+
 		// Call the game finished method of the Game class.
-		this.props.onFinished();
+		this.props.onFinished(winners);
 	}
 
 	renderDisc(size, colour)
