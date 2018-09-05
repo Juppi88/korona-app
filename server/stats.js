@@ -16,6 +16,8 @@ const COLOUR_YELLOW = 1;
 const COLOUR_GREEN = 2;
 const COLOUR_BLUE = 3;
 
+var stats = {};
+
 // --------------------------------------------------------------------------------
 
 module.exports.setupDatabase = function()
@@ -55,12 +57,15 @@ module.exports.setupDatabase = function()
 	// Retrieve and store the biggest index in the game log.
 	db.get("SELECT MAX(id) FROM game_log;", [], (err, row) => {
 		if (row) {
-			previousLogIndex = row[Object.keys(row)[0]];
+			previousLogIndex = getAtIndex(row, 0);
 		}
 	});
 
 	db.close();
+
+	cacheStats();
 };
+
 
 module.exports.getNames = function()
 {
@@ -96,6 +101,11 @@ module.exports.getNames = function()
 
 	return names;
 };
+
+module.exports.getStats = function()
+{
+	return stats;
+}
 
 module.exports.addName = function(name)
 {
@@ -188,3 +198,103 @@ module.exports.saveGameToLog = function(game)
 
 	return previousLogIndex + 1;
 };
+
+function cacheStats()
+{
+	let db = new sqlite3.Database(DatabaseName);
+	if (db == null) {
+		return;
+	}
+
+	stats = {};
+
+	// Get number of games overall with wins per colour.
+	db.get(
+		`SELECT
+			SUM(CASE WHEN winners & 1 THEN 1 ELSE 0 END),
+			SUM(CASE WHEN winners & 2 THEN 1 ELSE 0 END),
+			SUM(CASE WHEN winners & 4 THEN 1 ELSE 0 END),
+			SUM(CASE WHEN winners & 8 THEN 1 ELSE 0 END),
+			COUNT(*)
+			FROM game_log;`,
+		(err, row) => {
+
+			if (row) {
+				stats.totalGames = getAtIndex(row, 4);
+				stats.winsRed = getAtIndex(row, 0);
+				stats.winsYellow = getAtIndex(row, 1);
+				stats.winsGreen = getAtIndex(row, 2);
+				stats.winsBlue = getAtIndex(row, 3);
+			}
+		}
+	);
+
+	// Get a list of player names with their name indices.
+	db.all(
+		`SELECT * FROM names;`,
+		(err, rows) => {
+
+			if (rows) {
+				stats.players = rows;
+
+				// Now get per-player stats.
+				cachePlayerStats(db);
+			}
+		}
+	);
+
+	db.close();
+}
+
+function cachePlayerStats(db)
+{
+	// Count the number of games and wins for each player name.
+	for (var i = 0, c = stats.players.length; i < c; i++) {
+
+		var player = stats.players[i];
+		var id = player.id;
+
+		db.get(
+			`SELECT ?, COUNT(*) FROM game_log WHERE plr_red = ? OR plr_yellow = ? OR plr_green = ? OR plr_blue = ?;`,
+			id, id, id, id, id,
+			(err, row) => {
+
+				if (row) {
+					var id = getAtIndex(row, 0);
+					var player = stats.players.find((x) => { return x.id == id; });
+
+					if (player != null) {
+						player.totalGames = getAtIndex(row, 1);
+					}
+				}
+			}
+		);
+
+		// Get the number of wins for each player.
+		db.get(
+			`SELECT ?, COUNT(*) FROM game_log WHERE
+				(plr_red = ? AND winners & 1) OR
+				(plr_yellow = ? AND winners & 2) OR
+				(plr_green = ? AND winners & 4) OR
+				(plr_blue = ? AND winners & 8);`,
+				id, id, id, id, id,
+
+			(err, row) => {
+
+				if (row) {
+					var id = getAtIndex(row, 0);
+					var player = stats.players.find((x) => { return x.id == id; });
+
+					if (player != null) {
+						player.wins = getAtIndex(row, 1);
+					}
+				}
+			}
+		);
+	}
+}
+
+function getAtIndex(obj, idx)
+{
+	return obj[Object.keys(obj)[idx]];
+}

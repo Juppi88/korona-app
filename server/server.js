@@ -37,6 +37,12 @@ app.put("/api/game", (req, res) => {
 	res.send({ gameIndex: gameIndex });
 });
 
+app.get("/api/stats", (req, res) => {
+
+	var gameStats = stats.getStats();
+	res.send(gameStats);
+});
+
 // Create an SQLite database for stats and other information.
 stats.setupDatabase();
 

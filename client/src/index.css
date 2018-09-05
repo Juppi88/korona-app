@@ -103,3 +103,12 @@ button:hover {
 .bottom-menu .start-button { /* Controls on the bottom right side of the screen (new game etc.) */
 	margin-top: 1rem;
 }
+
+.stats-icon {
+	font-size: 4rem !important;
+	color: var(--colour);
+	position: absolute;
+	right: 2rem;
+	bottom: 2rem;
+	cursor: pointer;
+}

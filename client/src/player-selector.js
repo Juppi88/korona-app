@@ -1,4 +1,5 @@
 import React from 'react';
+import PieChart from '@material-ui/icons/PieChart';
 
 // --------------------------------------------------------------------------------
 
@@ -37,6 +38,15 @@ class PlayerSelector extends React.Component
 				return response.json();
 			}).then(function(json) {
 				instance.setState({ available: json.names });
+			}).catch(function(ex) {
+			}
+		);
+
+		fetch('/api/stats')
+			.then(function(response) {
+				return response.json();
+			}).then(function(json) {
+				console.log(json);
 			}).catch(function(ex) {
 			}
 		);
@@ -204,6 +214,8 @@ class PlayerSelector extends React.Component
 					<button onClick={() => this.startGame()} className="start-button">Aloita peli</button> :
 					<div></div>
 				}
+
+				<PieChart className="stats-icon"/>
 			</div>
 		);
 	}
