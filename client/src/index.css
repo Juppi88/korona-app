@@ -63,7 +63,7 @@ button:hover {
 
 .player-list {
 	margin: auto;
-	margin-top: 1rem;
+	margin-top: 0.5rem;
 	width: 20rem;
 }
 
@@ -100,5 +100,6 @@ button:hover {
 	margin-bottom: 0.5rem;
 }
 
-.bottom-menu { /* Controls on the bottom right side of the screen (new game etc.) */
+.bottom-menu .start-button { /* Controls on the bottom right side of the screen (new game etc.) */
+	margin-top: 1rem;
 }
