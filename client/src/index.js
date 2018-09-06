@@ -2,12 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PlayerSelector from './player-selector.js';
 import PlayerList from './player-list.js';
+import StatsScreen from './stats-screen.js';
 import './index.css';
 
 // --------------------------------------------------------------------------------
 
 const STATE_PLAYERS = 0; // Selecting players
 const STATE_GAME = 1; // Game started, displaying the player list
+const STATE_STATS = 2; // Viewing stats
 
 const COLOUR_NONE = -1;
 const COLOUR_RED = 0;
@@ -113,6 +115,20 @@ class Game extends React.Component
 		});
 	}
 
+	onShowStats()
+	{
+		this.setState({
+			state: STATE_STATS,
+		});
+	}
+
+	onShowPlayerSelector()
+	{
+		this.setState({
+			state: STATE_PLAYERS,
+		});
+	}
+
 	onGameFinished(players)
 	{
 		// Compile a list of winners for the game.
@@ -193,10 +209,18 @@ class Game extends React.Component
 				</div>
 			);
 
+		case STATE_STATS: // Render the stats screen
+			
+			return (
+				<div className="game-container">
+					<StatsScreen onGoBack={ this.onShowPlayerSelector.bind(this) }/>
+				</div>
+			);
+
 		default: // Render the player selector.
 			return (
 				<div className="game-container">
-					<PlayerSelector onReady={ this.onGameStarted.bind(this) }/>
+					<PlayerSelector onReady={ this.onGameStarted.bind(this) } onShowStats={ this.onShowStats.bind(this) }/>
 				</div>
 			);
 		}

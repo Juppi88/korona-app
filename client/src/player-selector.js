@@ -41,15 +41,6 @@ class PlayerSelector extends React.Component
 			}).catch(function(ex) {
 			}
 		);
-
-		fetch('/api/stats')
-			.then(function(response) {
-				return response.json();
-			}).then(function(json) {
-				console.log(json);
-			}).catch(function(ex) {
-			}
-		);
 	}
 
 	addNameToDatabase(name)
@@ -215,7 +206,7 @@ class PlayerSelector extends React.Component
 					<div></div>
 				}
 
-				<PieChart className="stats-icon"/>
+				<PieChart onClick={() => this.props.onShowStats()} className="stats-icon"/>
 			</div>
 		);
 	}
