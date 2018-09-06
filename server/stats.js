@@ -85,25 +85,31 @@ module.exports.getNames = function()
 		return names;
 	}
 
-	// Clear the old list.
-	names = [];
-	nameIndices = [];
-
 	let db = new sqlite3.Database(DatabaseName);
 	if (db == null) {
 		return names;
 	}
 
-	db.each("SELECT id, name FROM names",
+	db.all("SELECT id, name FROM names", [],
 
-		(err, row) => {
-			if (row && row.name) {
+		(err, rows) => {
 
-				names.push(row.name);
-				names.sort();
+			if (rows) {
 
-				// Store a tuple containing the name and a matching index from the name table.
-				nameIndices.push({ id: row.id, name: row.name });
+				// Clear the old list.
+				names = [];
+				nameIndices = [];
+
+				for (var i = 0, c = rows.length; i < c; i++) {
+
+					if (rows[i].name) {
+						names.push(rows[i].name);
+						names.sort();
+
+						// Store a tuple containing the name and a matching index from the name table.
+						nameIndices.push({ id: rows[i].id, name: rows[i].name });
+					}
+				}
 			}
 		}
 	);
@@ -260,6 +266,25 @@ function updateStats(game, winnerFlags)
 			}
 		}
 	}
+
+	// Update the game log.
+	var log = {};
+
+	log.timeStarted = game.startTime;
+	log.timeEnded = game.endTime;
+	log.players = Array(4);
+
+	log.players[COLOUR_RED] = { name: game.players[COLOUR_RED], isStarter: (game.starter == COLOUR_RED), isWinner: game.winners.indexOf(COLOUR_RED) != -1 };
+	log.players[COLOUR_YELLOW] = { name: game.players[COLOUR_YELLOW], isStarter: (game.starter == COLOUR_YELLOW), isWinner: game.winners.indexOf(COLOUR_YELLOW) != -1 };
+	log.players[COLOUR_GREEN] = { name: game.players[COLOUR_GREEN], isStarter: (game.starter == COLOUR_GREEN), isWinner: game.winners.indexOf(COLOUR_GREEN) != -1 };
+	log.players[COLOUR_BLUE] = { name: game.players[COLOUR_BLUE], isStarter: (game.starter == COLOUR_BLUE), isWinner: game.winners.indexOf(COLOUR_BLUE) != -1 };
+
+	logs.splice(0, 0, log);
+
+	// Remove old entries from the log so there are only 10 visible.
+	while (logs.length > 10) {
+		logs.splice(logs.length - 1, 1);
+	}
 }
 
 function cacheStats()
@@ -366,8 +391,7 @@ function cacheLogs()
 
 	logs = [];
 
-	db.all(
-		`SELECT * FROM game_log ORDER BY id DESC LIMIT 10;`, [],
+	db.all(`SELECT * FROM game_log ORDER BY id DESC LIMIT 10;`, [],
 
 			(err, rows) => {
 
