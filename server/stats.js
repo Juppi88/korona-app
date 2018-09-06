@@ -124,14 +124,15 @@ module.exports.addName = function(name)
 	let db = new sqlite3.Database(DatabaseName);
 	if (db != null) {
 		
-		var statement = db.prepare("INSERT INTO names (name) VALUES ('" + name + "');");
+		var statement = db.prepare("INSERT INTO names (name) VALUES (?);");
 
-		statement.run([], function(err) {
+		statement.run(name, function(err) {
 
 			if (!err) {
 				// Update name indices list.
 				nameIndices.push({ id: this.lastID, name: name });
 			}
+			else console.log(err);
 		});
 
 		statement.finalize();
