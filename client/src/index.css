@@ -115,6 +115,10 @@ button:hover {
 	cursor: pointer;
 }
 
+.stats-icon.second {
+	left: 7rem;
+}
+
 .stats-container {
 	border-spacing: 0;
 	border-collapse: collapse;

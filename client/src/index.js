@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom';
 import PlayerSelector from './player-selector.js';
 import PlayerList from './player-list.js';
 import StatsScreen from './stats-screen.js';
+import PieChart from '@material-ui/icons/PieChart';
+import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
+import KeyboardBackspace from '@material-ui/icons/KeyboardBackspace';
 import './index.css';
 
 // --------------------------------------------------------------------------------
 
 const STATE_PLAYERS = 0; // Selecting players
 const STATE_GAME = 1; // Game started, displaying the player list
-const STATE_STATS = 2; // Viewing stats
 
 const COLOUR_NONE = -1;
 const COLOUR_RED = 0;
@@ -32,6 +34,7 @@ class Game extends React.Component
 			state: STATE_PLAYERS,
 			players: null,
 			gameStarted: 0,
+			isViewingStats: false,
 		};
 	}
 
@@ -115,20 +118,6 @@ class Game extends React.Component
 		});
 	}
 
-	onShowStats()
-	{
-		this.setState({
-			state: STATE_STATS,
-		});
-	}
-
-	onShowPlayerSelector()
-	{
-		this.setState({
-			state: STATE_PLAYERS,
-		});
-	}
-
 	onGameFinished(players)
 	{
 		// Compile a list of winners for the game.
@@ -197,30 +186,35 @@ class Game extends React.Component
 
 	render()
 	{
-		switch (this.state.state) {
-
-		case STATE_GAME: // Render the player list.
-			
+		if (this.state.isViewingStats)
+		{
+			// Render the stats screen
+			return (
+				<div className="game-container">
+					<StatsScreen/>
+					<KeyboardBackspace onClick={() => this.setState({isViewingStats: false})} className="stats-icon"/>
+				</div>
+			);
+		}
+		else if (this.state.state === STATE_GAME)
+		{
+			// Render the player list.
 			const players = this.state.players;
 
 			return (
 				<div className="game-container">
 					<PlayerList players={players} onFinished={ this.onGameFinished.bind(this) }/>
+					<PieChart onClick={() => this.setState({isViewingStats: true})} className="stats-icon"/>
 				</div>
 			);
-
-		case STATE_STATS: // Render the stats screen
-			
+		}
+		else
+		{
+			// // Render the player selector.
 			return (
 				<div className="game-container">
-					<StatsScreen onGoBack={ this.onShowPlayerSelector.bind(this) }/>
-				</div>
-			);
-
-		default: // Render the player selector.
-			return (
-				<div className="game-container">
-					<PlayerSelector onReady={ this.onGameStarted.bind(this) } onShowStats={ this.onShowStats.bind(this) }/>
+					<PlayerSelector onReady={ this.onGameStarted.bind(this) }/>
+					<PieChart onClick={() => this.setState({isViewingStats: true})} className="stats-icon"/>
 				</div>
 			);
 		}

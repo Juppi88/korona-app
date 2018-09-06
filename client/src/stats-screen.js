@@ -1,6 +1,5 @@
 import React from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, LabelList } from "recharts";
-import KeyboardBackspace from '@material-ui/icons/KeyboardBackspace';
 
 // --------------------------------------------------------------------------------
 
@@ -170,21 +169,19 @@ class StatsScreen extends React.Component
 		}
 		return (
 			<div className="stats-container">
-			<table>
-			<tbody>
+				<table>
+				<tbody>
 
-				<tr>
-					<td>{this.renderWinsPerPlayer()}</td>
-					<td>{this.renderGamesPerPlayer()}</td>
-				</tr>
-				<tr>
-					<td>{this.renderColourWins()}</td>
-					<td>{this.renderGameStats()}</td>
-				</tr>
-			</tbody>
-			</table>
-
-			<KeyboardBackspace onClick={() => this.props.onGoBack()} className="stats-icon"/>
+					<tr>
+						<td>{this.renderWinsPerPlayer()}</td>
+						<td>{this.renderGamesPerPlayer()}</td>
+					</tr>
+					<tr>
+						<td>{this.renderColourWins()}</td>
+						<td>{this.renderGameStats()}</td>
+					</tr>
+				</tbody>
+				</table>
 			</div>
 		);
 	}

@@ -1,5 +1,4 @@
 import React from 'react';
-import PieChart from '@material-ui/icons/PieChart';
 
 // --------------------------------------------------------------------------------
 
@@ -205,10 +204,10 @@ class PlayerSelector extends React.Component
 					<button onClick={() => this.startGame()} className="start-button">Aloita peli</button> :
 					<div></div>
 				}
-
-				<PieChart onClick={() => this.props.onShowStats()} className="stats-icon"/>
 			</div>
 		);
+
+		//<FormatListBulleted onClick={() => this.props.onShowStats()} className="stats-icon second"/>
 	}
 }
 
