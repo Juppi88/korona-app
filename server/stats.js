@@ -17,6 +17,7 @@ const COLOUR_GREEN = 2;
 const COLOUR_BLUE = 3;
 
 var stats = {};
+var logs = [];
 
 // --------------------------------------------------------------------------------
 
@@ -63,7 +64,17 @@ module.exports.setupDatabase = function()
 
 	db.close();
 
-	cacheStats();
+	// Cache stats and logs to speed up backend requests.
+	module.exports.getNames();
+
+	setTimeout(() => {
+
+		// Wait for the names list to be resolved.
+		// This is a crappy way to do things, but oh well.
+		cacheStats();
+		cacheLogs();
+
+	}, 2000);
 };
 
 
@@ -107,6 +118,11 @@ module.exports.getStats = function()
 	return stats;
 }
 
+module.exports.getLogs = function()
+{
+	return logs;
+}
+
 module.exports.addName = function(name)
 {
 	// Make sure the name isn't already on the list.
@@ -132,7 +148,6 @@ module.exports.addName = function(name)
 				// Update name indices list.
 				nameIndices.push({ id: this.lastID, name: name });
 			}
-			else console.log(err);
 		});
 
 		statement.finalize();
@@ -142,6 +157,12 @@ module.exports.addName = function(name)
 
 	return names;
 };
+
+function getName(index)
+{
+	var nameInfo = nameIndices.find((x) => x.id == index);
+	return (nameInfo ? nameInfo.name : "");
+}
 
 function getNameIndex(name)
 {
@@ -334,6 +355,42 @@ function cachePlayerStats(db)
 			}
 		);
 	}
+}
+
+function cacheLogs()
+{
+	let db = new sqlite3.Database(DatabaseName);
+	if (db == null) {
+		return;
+	}
+
+	logs = [];
+
+	db.all(
+		`SELECT * FROM game_log ORDER BY id DESC LIMIT 10;`, [],
+
+			(err, rows) => {
+
+			if (rows) {
+
+				for (var i = 0, c = rows.length; i < c; i++) {
+
+					var game = {};
+
+					game.timeStarted = rows[i].time_started;
+					game.timeEnded = rows[i].time_ended;
+					game.players = Array(4);
+
+					game.players[COLOUR_RED] = { name: getName(rows[i].plr_red), isStarter: (rows[i].first_player == COLOUR_RED), isWinner: (rows[i].winners & 1) != 0 };
+					game.players[COLOUR_YELLOW] = { name: getName(rows[i].plr_yellow), isStarter: (rows[i].first_player == COLOUR_YELLOW), isWinner: (rows[i].winners & 2) != 0 };
+					game.players[COLOUR_GREEN] = { name: getName(rows[i].plr_green), isStarter: (rows[i].first_player == COLOUR_GREEN), isWinner: (rows[i].winners & 4) != 0 };
+					game.players[COLOUR_BLUE] = { name: getName(rows[i].plr_blue), isStarter: (rows[i].first_player == COLOUR_BLUE), isWinner: (rows[i].winners & 8) != 0 };
+
+					logs.push(game);
+				}
+			}
+		}
+	);
 }
 
 function getAtIndex(obj, idx)

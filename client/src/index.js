@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import PlayerSelector from './player-selector.js';
 import PlayerList from './player-list.js';
 import StatsScreen from './stats-screen.js';
+import LogScreen from './log-screen.js';
 import PieChart from '@material-ui/icons/PieChart';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import KeyboardBackspace from '@material-ui/icons/KeyboardBackspace';
@@ -35,6 +36,7 @@ class Game extends React.Component
 			players: null,
 			gameStarted: 0,
 			isViewingStats: false,
+			isViewingLogs: false,
 		};
 	}
 
@@ -196,6 +198,16 @@ class Game extends React.Component
 				</div>
 			);
 		}
+		else if (this.state.isViewingLogs)
+		{
+			// Render the log screen.
+			return (
+				<div className="game-container">
+					<LogScreen/>
+					<KeyboardBackspace onClick={() => this.setState({isViewingLogs: false})} className="stats-icon"/>
+				</div>
+			);
+		}
 		else if (this.state.state === STATE_GAME)
 		{
 			// Render the player list.
@@ -213,8 +225,12 @@ class Game extends React.Component
 			// // Render the player selector.
 			return (
 				<div className="game-container">
+
 					<PlayerSelector onReady={ this.onGameStarted.bind(this) }/>
+
 					<PieChart onClick={() => this.setState({isViewingStats: true})} className="stats-icon"/>
+					<FormatListBulleted onClick={() => this.setState({isViewingLogs: true})} className="stats-icon second"/>
+
 				</div>
 			);
 		}

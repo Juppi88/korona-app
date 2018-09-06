@@ -43,6 +43,12 @@ app.get("/api/stats", (req, res) => {
 	res.send(gameStats);
 });
 
+app.get("/api/logs", (req, res) => {
+
+	var gameLogs = stats.getLogs();
+	res.send(gameLogs);
+});
+
 // Create an SQLite database for stats and other information.
 stats.setupDatabase();
 

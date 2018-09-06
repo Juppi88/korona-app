@@ -161,3 +161,11 @@ button:hover {
 	font-size: 0.8rem;
 	font-weight: bold;
 }
+
+.logs td, th {
+	padding: 0.2rem;
+}
+
+.logs .first-row {
+	background-color: #E0E0F6;
+}

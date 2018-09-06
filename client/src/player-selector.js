@@ -206,8 +206,6 @@ class PlayerSelector extends React.Component
 				}
 			</div>
 		);
-
-		//<FormatListBulleted onClick={() => this.props.onShowStats()} className="stats-icon second"/>
 	}
 }
 
