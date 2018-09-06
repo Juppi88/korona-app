@@ -160,6 +160,8 @@ function getNameIndex(name)
 
 module.exports.saveGameToLog = function(game)
 {
+	var logIndex = previousLogIndex + 1;
+
 	var plrRed = getNameIndex(game.players[COLOUR_RED]);
 	var plrYellow = getNameIndex(game.players[COLOUR_YELLOW]);
 	var plrGreen = getNameIndex(game.players[COLOUR_GREEN]);
@@ -197,8 +199,47 @@ module.exports.saveGameToLog = function(game)
 		db.close();
 	}
 
-	return previousLogIndex + 1;
+	// Update the stats cache.
+	updateStats(game, winnerFlags);
+
+	// Return the log index of the game that was just inserted.
+	return logIndex;
 };
+
+function updateStats(game, winnerFlags)
+{
+	// Increase the number of total games played.
+	stats.totalGames++;
+
+	// Increase the number of wins per colour.
+	for (var i = 0, c = game.winners.length; i < c; i++) {
+
+		if (game.winners[i] == COLOUR_RED) stats.winsRed++;
+		else if (game.winners[i] == COLOUR_YELLOW) stats.winsYellow++;
+		else if (game.winners[i] == COLOUR_GREEN) stats.winsGreen++;
+		else if (game.winners[i] == COLOUR_BLUE) stats.winsBlue++;
+	}
+
+	// Increase the number of games and wins for players.
+	for (var i = 0, c = game.players.length; i < c; i++) {
+
+		if (game.players[i]) {
+
+			// Find the player's data container.
+			var id = getNameIndex(game.players[i]);
+			var player = stats.players.find((x) => { return x.id == id; });
+
+			if (player != null) {
+				player.totalGames++;
+
+				if (i == COLOUR_RED && winnerFlags & 1) player.wins++;
+				else if (i == COLOUR_YELLOW && winnerFlags & 2) player.wins++;
+				else if (i == COLOUR_GREEN && winnerFlags & 4) player.wins++;
+				else if (i == COLOUR_BLUE && winnerFlags & 8) player.wins++;
+			}
+		}
+	}
+}
 
 function cacheStats()
 {
