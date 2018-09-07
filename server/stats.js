@@ -21,6 +21,16 @@ var logs = [];
 
 // --------------------------------------------------------------------------------
 
+module.exports.getStats = function()
+{
+	return stats;
+}
+
+module.exports.getLogs = function()
+{
+	return logs;
+}
+
 module.exports.setupDatabase = function()
 {
 	let db = new sqlite3.Database(DatabaseName);
@@ -77,7 +87,6 @@ module.exports.setupDatabase = function()
 	}, 2000);
 };
 
-
 module.exports.getNames = function()
 {
 	// Return the cached name list.
@@ -118,72 +127,6 @@ module.exports.getNames = function()
 
 	return names;
 };
-
-module.exports.getStats = function()
-{
-	return stats;
-}
-
-module.exports.getLogs = function()
-{
-	return logs;
-}
-
-module.exports.addName = function(name)
-{
-	// Make sure the name isn't already on the list.
-	if (names.indexOf(name) >= 0) {
-		return names;
-	}
-
-	// Add the new name to the list.
-	names.push(name);
-
-	// Sort the names alphabetically.
-	names.sort();
-
-	// Add the new name to the database.
-	let db = new sqlite3.Database(DatabaseName);
-	if (db != null) {
-		
-		var statement = db.prepare("INSERT INTO names (name) VALUES (?);");
-
-		statement.run(name, function(err) {
-
-			if (!err) {
-				// Update name indices list.
-				nameIndices.push({ id: this.lastID, name: name });
-			}
-		});
-
-		statement.finalize();
-
-		db.close();
-	}
-
-	return names;
-};
-
-function getName(index)
-{
-	var nameInfo = nameIndices.find((x) => x.id == index);
-	return (nameInfo ? nameInfo.name : "");
-}
-
-function getNameIndex(name)
-{
-	if (!name) {
-		return 0;
-	}
-
-	for (var i = 0, c = nameIndices.length; i < c; i++) {
-		if (nameIndices[i].name == name) {
-			return nameIndices[i].id;
-		}
-	}
-
-	return 0;
-}
 
 module.exports.saveGameToLog = function(game)
 {
@@ -233,10 +176,69 @@ module.exports.saveGameToLog = function(game)
 	return logIndex;
 };
 
+module.exports.addName = function(name)
+{
+	// Make sure the name isn't already on the list.
+	if (names.indexOf(name) >= 0) {
+		return names;
+	}
+
+	// Add the new name to the list.
+	names.push(name);
+
+	// Sort the names alphabetically.
+	names.sort();
+
+	// Add the new name to the database.
+	let db = new sqlite3.Database(DatabaseName);
+	if (db != null) {
+		
+		var statement = db.prepare("INSERT INTO names (name) VALUES (?);");
+
+		statement.run(name, function(err) {
+
+			if (!err) {
+				// Update name indices list.
+				nameIndices.push({ id: this.lastID, name: name });
+			}
+		});
+
+		statement.finalize();
+
+		db.close();
+	}
+
+	return names;
+};
+
+// --------------------------------------------------------------------------------
+
+function getName(index)
+{
+	var nameInfo = nameIndices.find((x) => x.id == index);
+	return (nameInfo ? nameInfo.name : "");
+}
+
+function getNameIndex(name)
+{
+	if (!name) {
+		return 0;
+	}
+
+	for (var i = 0, c = nameIndices.length; i < c; i++) {
+		if (nameIndices[i].name == name) {
+			return nameIndices[i].id;
+		}
+	}
+
+	return 0;
+}
+
 function updateStats(game, winnerFlags)
 {
-	// Increase the number of total games played.
+	// Increase the number of total games played and time played.
 	stats.totalGames++;
+	stats.totalDuration += (game.endTime - game.startTime);
 
 	// Increase the number of wins per colour.
 	for (var i = 0, c = game.winners.length; i < c; i++) {
@@ -303,12 +305,14 @@ function cacheStats()
 			SUM(CASE WHEN winners & 2 THEN 1 ELSE 0 END),
 			SUM(CASE WHEN winners & 4 THEN 1 ELSE 0 END),
 			SUM(CASE WHEN winners & 8 THEN 1 ELSE 0 END),
-			COUNT(*)
+			COUNT(*),
+			SUM(time_ended - time_started)
 			FROM game_log;`,
 		(err, row) => {
 
 			if (row) {
 				stats.totalGames = getAtIndex(row, 4);
+				stats.totalDuration = getAtIndex(row, 5);
 				stats.winsRed = getAtIndex(row, 0);
 				stats.winsYellow = getAtIndex(row, 1);
 				stats.winsGreen = getAtIndex(row, 2);
