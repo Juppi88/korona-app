@@ -329,6 +329,13 @@ function cacheStats()
 			if (rows) {
 				stats.players = rows;
 
+				for (var i = 0, c = stats.players.length; i < c; i++) {
+
+					stats.players[i].level = 1;
+					stats.players[i].xp = 0;
+					stats.players[i].xpToNextLevel = expRequiredToLevel(2);
+				}
+
 				// Now get per-player stats.
 				cachePlayerStats(db);
 			}
@@ -336,6 +343,13 @@ function cacheStats()
 	);
 
 	db.close();
+
+	setTimeout(() => {
+
+		// TESTING
+		simulateGames();
+
+	}, 2000);
 }
 
 function cachePlayerStats(db)
@@ -355,7 +369,7 @@ function cachePlayerStats(db)
 					var id = getAtIndex(row, 0);
 					var player = stats.players.find((x) => { return x.id == id; });
 
-					if (player != null) {
+					if (player) {
 						player.totalGames = getAtIndex(row, 1);
 					}
 				}
@@ -377,7 +391,7 @@ function cachePlayerStats(db)
 					var id = getAtIndex(row, 0);
 					var player = stats.players.find((x) => { return x.id == id; });
 
-					if (player != null) {
+					if (player) {
 						player.wins = getAtIndex(row, 1);
 					}
 				}
@@ -424,4 +438,107 @@ function cacheLogs()
 function getAtIndex(obj, idx)
 {
 	return obj[Object.keys(obj)[idx]];
+}
+
+function expRequiredToLevel(level)
+{
+	return (Math.pow(level, 2) + level) / 2;
+}
+
+function simulateGame(players)
+{
+	for (var i = 0, c = players.length; i < c; i++) {
+
+		if (players[i].name && players[i].statsIndex >= 0 && players[i].isWinner) {
+
+			const player = stats.players[players[i].statsIndex];
+
+			// Player is a winner, reward them with some xp.
+			var xp = 0;
+
+			for (var j = 0; j < c; j++) {
+				if (i == j) continue; // Skip the player themself
+				if (players[j].statsIndex >= 0) {
+					xp += player.level;
+				}
+			}
+
+			player.xp += xp;
+			//console.log(player.xp + "," + stats.players[players[i].statsIndex].xp);
+
+			for (var lvl = player.level + 1;;) {
+				
+				if (player.xp >= player.xpToNextLevel) {
+
+					player.level++;
+					player.xp -= player.xpToNextLevel;
+					player.xpToNextLevel = expRequiredToLevel(player.level);
+					
+					console.log(player.name + " leveled to " + player.level);
+				}
+				else {
+					break;
+				}
+			}
+		}
+	}
+}
+
+function simulateGames()
+{
+	let db = new sqlite3.Database(DatabaseName);
+	if (db == null) {
+		return names;
+	}
+
+	db.all(`SELECT * FROM game_log ORDER BY id ASC;`, [],
+
+		(err, rows) => {
+
+			if (!rows) {
+				return;
+			}
+
+			for (var i = 0, c = rows.length; i < c; i++) {
+				
+				// Generate a list of players in the game.
+				var players = Array(4);
+
+				players[COLOUR_RED] = {
+					name: getName(rows[i].plr_red),
+					isStarter: (rows[i].first_player == COLOUR_RED),
+					isWinner: (rows[i].winners & 1) != 0,
+					statsIndex: stats.players.findIndex((x) => { return x.id == rows[i].plr_red; })
+				};
+
+				players[COLOUR_YELLOW] = {
+					name: getName(rows[i].plr_yellow),
+					isStarter: (rows[i].first_player == COLOUR_YELLOW),
+					isWinner: (rows[i].winners & 2) != 0,
+					statsIndex: stats.players.findIndex((x) => { return x.id == rows[i].plr_yellow; })
+				};
+
+				players[COLOUR_GREEN] = {
+					name: getName(rows[i].plr_green),
+					isStarter: (rows[i].first_player == COLOUR_GREEN),
+					isWinner: (rows[i].winners & 4) != 0,
+					statsIndex: stats.players.findIndex((x) => { return x.id == rows[i].plr_green; })
+				};
+
+				players[COLOUR_BLUE] = {
+					name: getName(rows[i].plr_blue),
+					isStarter: (rows[i].first_player == COLOUR_BLUE),
+					isWinner: (rows[i].winners & 8) != 0,
+					statsIndex: stats.players.findIndex((x) => { return x.id == rows[i].plr_blue; })
+				};
+
+				// Simulate the game with these players.
+				simulateGame(players);
+			}
+
+			for (var j = 0, c2 = stats.players.length; j < c2; j++) {
+				console.log(stats.players[j].name + ", XP: " + stats.players[j].xp + ", Level: " + stats.players[j].level);
+			}
+		}
+	);
 }
