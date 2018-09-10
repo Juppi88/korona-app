@@ -167,6 +167,8 @@ class StatsScreen extends React.Component
 				<ul>
 					<li>Pelejä yhteensä: <span>{stats.totalGames}</span></li>
 					<li>Pelin pituus (keskim.): <span>{((stats.totalDuration / 60) / stats.totalGames).toFixed(0)} min</span></li>
+					<li>Pisin peli: <span>{(stats.maxDuration / 60).toFixed(0)} min</span></li>
+					<li>Lyhin peli: <span>{(stats.minDuration / 60).toFixed(0)} min</span></li>
 				</ul>
 			</div>
 		);

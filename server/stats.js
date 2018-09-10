@@ -237,8 +237,14 @@ function getNameIndex(name)
 function updateStats(game, winnerFlags)
 {
 	// Increase the number of total games played and time played.
+	var gameDuration = (game.endTime - game.startTime);
+
 	stats.totalGames++;
-	stats.totalDuration += (game.endTime - game.startTime);
+	stats.totalDuration += gameDuration;
+
+	// Update min and max game durations if necessary.
+	if (gameDuration < stats.minDuration) minDuration = gameDuration;
+	if (gameDuration > stats.maxDuration) maxDuration = gameDuration;
 
 	// Increase the number of wins per colour.
 	for (var i = 0, c = game.winners.length; i < c; i++) {
@@ -306,13 +312,17 @@ function cacheStats()
 			SUM(CASE WHEN winners & 4 THEN 1 ELSE 0 END),
 			SUM(CASE WHEN winners & 8 THEN 1 ELSE 0 END),
 			COUNT(*),
-			SUM(time_ended - time_started)
+			SUM(time_ended - time_started),
+			MIN(time_ended - time_started),
+			MAX(time_ended - time_started)
 			FROM game_log;`,
 		(err, row) => {
 
 			if (row) {
 				stats.totalGames = getAtIndex(row, 4);
 				stats.totalDuration = getAtIndex(row, 5);
+				stats.minDuration = getAtIndex(row, 6);
+				stats.maxDuration = getAtIndex(row, 7);
 				stats.winsRed = getAtIndex(row, 0);
 				stats.winsYellow = getAtIndex(row, 1);
 				stats.winsGreen = getAtIndex(row, 2);
@@ -467,7 +477,7 @@ function simulateGame(players)
 			//console.log(player.xp + "," + stats.players[players[i].statsIndex].xp);
 
 			for (var lvl = player.level + 1;;) {
-				
+
 				if (player.xp >= player.xpToNextLevel) {
 
 					player.level++;
