@@ -20,7 +20,7 @@ class CustomizedLabel extends React.Component
 		return (
 			<text className="bar-label"
 				x={x - 10}
-				y={y} 
+				y={y + 7} 
 				fill={fill}
 				color="#fff"
 				textAnchor="start">{value}%
@@ -28,6 +28,8 @@ class CustomizedLabel extends React.Component
 		);
 	}
 }
+
+// --------------------------------------------------------------------------------
 
 class StatsScreen extends React.Component
 {
@@ -65,7 +67,7 @@ class StatsScreen extends React.Component
 	{
 		const stats = this.state.stats;
 		var totalWins = stats.winsRed + stats.winsYellow + stats.winsGreen + stats.winsBlue;
-		
+
 		const data = [
 			{name: "Punainen", value: Math.round(100 * stats.winsRed / totalWins)},
 			{name: "Keltainen", value: Math.round(100 * stats.winsYellow / totalWins)},
@@ -108,7 +110,7 @@ class StatsScreen extends React.Component
 					<YAxis type="category" dataKey="name"/>
 					<Tooltip/>
 					<Bar dataKey={dataKey} fill={colour}>
-						<LabelList dataKey={dataKey} position="right" />
+						<LabelList dataKey={dataKey} position="insideRight"/>
 					</Bar>
 				</BarChart>
 			</div>

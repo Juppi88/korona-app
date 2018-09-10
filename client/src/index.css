@@ -183,3 +183,7 @@ button:hover {
 .logs .first-row {
 	background-color: #E0E0F6;
 }
+
+.recharts-label tspan {
+	fill: white;
+}
