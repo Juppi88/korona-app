@@ -234,6 +234,21 @@ function getNameIndex(name)
 	return 0;
 }
 
+function getStatsIndex(name)
+{
+	if (!name) {
+		return -1;
+	}
+
+	for (var i = 0, c = stats.players.length; i < c; i++) {
+		if (stats.players[i].name == name) {
+			return i;
+		}
+	}
+
+	return 0;
+}
+
 function updateStats(game, winnerFlags)
 {
 	// Increase the number of total games played and time played.
@@ -243,8 +258,8 @@ function updateStats(game, winnerFlags)
 	stats.totalDuration += gameDuration;
 
 	// Update min and max game durations if necessary.
-	if (gameDuration < stats.minDuration) minDuration = gameDuration;
-	if (gameDuration > stats.maxDuration) maxDuration = gameDuration;
+	if (gameDuration < stats.minDuration) stats.minDuration = gameDuration;
+	if (gameDuration > stats.maxDuration) stats.maxDuration = gameDuration;
 
 	// Increase the number of wins per colour.
 	for (var i = 0, c = game.winners.length; i < c; i++) {
@@ -282,10 +297,36 @@ function updateStats(game, winnerFlags)
 	log.timeEnded = game.endTime;
 	log.players = Array(4);
 
-	log.players[COLOUR_RED] = { name: game.players[COLOUR_RED], isStarter: (game.starter == COLOUR_RED), isWinner: game.winners.indexOf(COLOUR_RED) != -1 };
-	log.players[COLOUR_YELLOW] = { name: game.players[COLOUR_YELLOW], isStarter: (game.starter == COLOUR_YELLOW), isWinner: game.winners.indexOf(COLOUR_YELLOW) != -1 };
-	log.players[COLOUR_GREEN] = { name: game.players[COLOUR_GREEN], isStarter: (game.starter == COLOUR_GREEN), isWinner: game.winners.indexOf(COLOUR_GREEN) != -1 };
-	log.players[COLOUR_BLUE] = { name: game.players[COLOUR_BLUE], isStarter: (game.starter == COLOUR_BLUE), isWinner: game.winners.indexOf(COLOUR_BLUE) != -1 };
+	log.players[COLOUR_RED] = {
+		name: game.players[COLOUR_RED],
+		isStarter: (game.starter == COLOUR_RED),
+		isWinner: game.winners.indexOf(COLOUR_RED) != -1,
+		statsIndex: getStatsIndex(game.players[COLOUR_RED])
+	};
+
+	log.players[COLOUR_YELLOW] = {
+		name: game.players[COLOUR_YELLOW],
+		isStarter: (game.starter == COLOUR_YELLOW),
+		isWinner: game.winners.indexOf(COLOUR_YELLOW) != -1,
+		statsIndex: getStatsIndex(game.players[COLOUR_YELLOW])
+	};
+
+	log.players[COLOUR_GREEN] = {
+		name: game.players[COLOUR_GREEN],
+		isStarter: (game.starter == COLOUR_GREEN),
+		isWinner: game.winners.indexOf(COLOUR_GREEN) != -1,
+		statsIndex: getStatsIndex(game.players[COLOUR_GREEN])
+	};
+
+	log.players[COLOUR_BLUE] = {
+		name: game.players[COLOUR_BLUE],
+		isStarter: (game.starter == COLOUR_BLUE),
+		isWinner: game.winners.indexOf(COLOUR_BLUE) != -1,
+		statsIndex: getStatsIndex(game.players[COLOUR_BLUE])
+	};
+
+	// Record XP/level changes.
+	recordGameXp(log.players, game.startTime);
 
 	logs.splice(0, 0, log);
 
@@ -359,7 +400,7 @@ function cacheStats()
 	setTimeout(() => {
 
 		// TESTING
-		simulateGames();
+		recordGames();
 
 	}, 2000);
 }
@@ -460,8 +501,14 @@ function expRequiredToLevel(level)
 	return (Math.pow(level, 2) + level) / 2;
 }
 
-function simulateGame(players, gameStarted)
+function recordGameXp(players, gameStarted)
 {
+	var playerCount = 0;
+
+	for (var i = 0, c = players.length; i < c; i++) {
+		if (players[i].name) playerCount++;
+	}
+
 	for (var i = 0, c = players.length; i < c; i++) {
 
 		if (!players[i].name || players[i].statsIndex < 0) {
@@ -502,26 +549,26 @@ function simulateGame(players, gameStarted)
 		// Calculate loser XP loss.
 		else {
 			// Lost XP is the level of the player.
-			var xp = player.level;
-			player.allTimeXp = Math.max(0, player.allTimeXp - xp);
+			var xpLoss = 1.0 * player.level / playerCount;
+			player.allTimeXp = Math.max(0, player.allTimeXp - xpLoss);
 
 			// Remove levels from the player when the lost XP exceeds the amount of XP the player has.
-			while (xp > player.xp) {
+			while (xpLoss > player.xp) {
 
 				// Player is at level 1 and loses all of their XP.
 				if (player.level == 1) {
 
 					player.xp = 0;
-					xp = 0;
+					xpLoss = 0;
 					break;
 				}
 
-				xp -= player.xp;
+				xpLoss -= player.xp;
 				player.xp = expRequiredToLevel(player.level);
 				player.level--;
 			}
 
-			player.xp -= xp;
+			player.xp -= xpLoss;
 		}
 
 		// Add the datapoint to player history.
@@ -533,7 +580,7 @@ function simulateGame(players, gameStarted)
 	}
 }
 
-function simulateGames()
+function recordGames()
 {
 	let db = new sqlite3.Database(DatabaseName);
 	if (db == null) {
@@ -581,8 +628,8 @@ function simulateGames()
 					statsIndex: stats.players.findIndex((x) => { return x.id == rows[i].plr_blue; })
 				};
 
-				// Simulate the game with these players.
-				simulateGame(players, rows[i].time_started);
+				// Record player XP changes with these players.
+				recordGameXp(players, rows[i].time_started);
 			}
 		}
 	);
