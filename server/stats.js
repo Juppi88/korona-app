@@ -450,6 +450,9 @@ function getAtIndex(obj, idx)
 	return obj[Object.keys(obj)[idx]];
 }
 
+// --------------------------------------------------------------------------------
+// XP/level code
+
 function expRequiredToLevel(level)
 {
 	return (Math.pow(level, 2) + level) / 2;
@@ -459,37 +462,63 @@ function simulateGame(players)
 {
 	for (var i = 0, c = players.length; i < c; i++) {
 
-		if (players[i].name && players[i].statsIndex >= 0 && players[i].isWinner) {
+		if (!players[i].name || players[i].statsIndex < 0) {
+			continue; // Empty player slot, skip
+		}
 
-			const player = stats.players[players[i].statsIndex];
+		const player = stats.players[players[i].statsIndex];
+
+		// Calculate winner XP gain.
+		if (players[i].isWinner) {
 
 			// Player is a winner, reward them with some xp.
 			var xp = 0;
 
+			// Gained XP is the sum of the opponents' levels.
 			for (var j = 0; j < c; j++) {
+
 				if (i == j) continue; // Skip the player themself
+
 				if (players[j].statsIndex >= 0) {
 					xp += player.level;
 				}
 			}
 
 			player.xp += xp;
-			//console.log(player.xp + "," + stats.players[players[i].statsIndex].xp);
 
-			for (var lvl = player.level + 1;;) {
+			// Level up if player has enough XP.
+			while (player.xp >= player.xpToNextLevel) {
 
-				if (player.xp >= player.xpToNextLevel) {
+				// DING! Level up
+				player.xp -= player.xpToNextLevel;
+				player.level++;
+				player.xpToNextLevel = expRequiredToLevel(player.level);
 
-					player.level++;
-					player.xp -= player.xpToNextLevel;
-					player.xpToNextLevel = expRequiredToLevel(player.level);
-					
-					console.log(player.name + " leveled to " + player.level);
-				}
-				else {
+				console.log(player.name + " leveled to " + player.level);
+			}
+		}
+		// Calculate loser XP loss.
+		else {
+			// Lost XP is the level of the player.
+			var xp = player.level;
+
+			// Remove levels from the player when the lost XP exceeds the amount of XP the player has.
+			while (xp > player.xp) {
+
+				// Player is at level 1 and loses all of their XP.
+				if (player.level == 1) {
+
+					player.xp = 0;
+					xp = 0;
 					break;
 				}
+
+				xp -= player.xp;
+				player.xp = expRequiredToLevel(player.level);
+				player.level--;
 			}
+
+			player.xp -= xp;
 		}
 	}
 }
@@ -546,6 +575,7 @@ function simulateGames()
 				simulateGame(players);
 			}
 
+			console.log("----------------------------------------");
 			for (var j = 0, c2 = stats.players.length; j < c2; j++) {
 				console.log(stats.players[j].name + ", XP: " + stats.players[j].xp + ", Level: " + stats.players[j].level);
 			}
