@@ -119,6 +119,10 @@ button:hover {
 	left: 7rem;
 }
 
+.stats-icon.third {
+	left: 12rem;
+}
+
 .stats-container {
 	border-spacing: 0;
 	border-collapse: collapse;
@@ -157,17 +161,17 @@ button:hover {
 	margin: 0 auto;
 }
 
-.chart-container ul {
+.stats-container ul {
 	text-align: left;
 	margin-left: 4rem;
 }
 
-.chart-container li {
+.stats-container li {
 	color: var(--colour);
 	list-style: none;
 }
 
-.chart-container li span {
+.stats-container li span {
 	color: black;
 }
 
@@ -186,4 +190,11 @@ button:hover {
 
 .recharts-label tspan {
 	fill: white;
+}
+
+select, optgroup {
+	font-size: 1.4rem;
+	margin-top: 0.5rem;
+	padding: 0.2rem;
+	font-family: 'Hind Madurai', sans-serif;
 }

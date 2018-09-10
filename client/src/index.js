@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom';
 import PlayerSelector from './player-selector.js';
 import PlayerList from './player-list.js';
 import StatsScreen from './stats-screen.js';
+import PlayerStatsScreen from './player-screen.js';
 import LogScreen from './log-screen.js';
 import PieChart from '@material-ui/icons/PieChart';
+import Person from '@material-ui/icons/Person';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import KeyboardBackspace from '@material-ui/icons/KeyboardBackspace';
 import './index.css';
@@ -13,6 +15,11 @@ import './index.css';
 
 const STATE_PLAYERS = 0; // Selecting players
 const STATE_GAME = 1; // Game started, displaying the player list
+
+const VIEW_DEFAULT = 0; // Default screen, no stats
+const VIEW_STATS = 1; // Generic game stats (top players, wins etc.)
+const VIEW_LOGS = 2; // Game log (10 most recent games)
+const VIEW_PLAYER = 3; // Per-player stats
 
 const COLOUR_NONE = -1;
 const COLOUR_RED = 0;
@@ -35,8 +42,7 @@ class Game extends React.Component
 			state: STATE_PLAYERS,
 			players: null,
 			gameStarted: 0,
-			isViewingStats: false,
-			isViewingLogs: false,
+			view: VIEW_DEFAULT
 		};
 	}
 
@@ -188,35 +194,45 @@ class Game extends React.Component
 
 	render()
 	{
-		if (this.state.isViewingStats)
+		if (this.state.view === VIEW_STATS)
 		{
 			// Render the stats screen
 			return (
 				<div className="game-container">
 					<StatsScreen/>
-					<KeyboardBackspace onClick={() => this.setState({isViewingStats: false})} className="stats-icon"/>
+					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon"/>
 				</div>
 			);
 		}
-		else if (this.state.isViewingLogs)
+		else if (this.state.view === VIEW_LOGS)
 		{
 			// Render the log screen.
 			return (
 				<div className="game-container">
 					<LogScreen/>
-					<KeyboardBackspace onClick={() => this.setState({isViewingLogs: false})} className="stats-icon"/>
+					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon"/>
+				</div>
+			);
+		}
+		else if (this.state.view === VIEW_PLAYER)
+		{
+			// Render the per-player stats screen.
+			return (
+				<div className="game-container">
+					<PlayerStatsScreen/>
+					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon"/>
 				</div>
 			);
 		}
 		else if (this.state.state === STATE_GAME)
 		{
-			// Render the player list.
+			// Render the player list when the game is on.
 			const players = this.state.players;
 
 			return (
 				<div className="game-container">
 					<PlayerList players={players} onFinished={ this.onGameFinished.bind(this) }/>
-					<PieChart onClick={() => this.setState({isViewingStats: true})} className="stats-icon"/>
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon"/>
 				</div>
 			);
 		}
@@ -228,8 +244,9 @@ class Game extends React.Component
 
 					<PlayerSelector onReady={ this.onGameStarted.bind(this) }/>
 
-					<PieChart onClick={() => this.setState({isViewingStats: true})} className="stats-icon"/>
-					<FormatListBulleted onClick={() => this.setState({isViewingLogs: true})} className="stats-icon second"/>
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon"/>
+					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
+					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
 
 				</div>
 			);

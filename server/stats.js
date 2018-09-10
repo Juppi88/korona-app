@@ -344,6 +344,8 @@ function cacheStats()
 					stats.players[i].level = 1;
 					stats.players[i].xp = 0;
 					stats.players[i].xpToNextLevel = expRequiredToLevel(2);
+					stats.players[i].history = [];
+					stats.players[i].allTimeXp = 0;
 				}
 
 				// Now get per-player stats.
@@ -458,7 +460,7 @@ function expRequiredToLevel(level)
 	return (Math.pow(level, 2) + level) / 2;
 }
 
-function simulateGame(players)
+function simulateGame(players, gameStarted)
 {
 	for (var i = 0, c = players.length; i < c; i++) {
 
@@ -485,6 +487,7 @@ function simulateGame(players)
 			}
 
 			player.xp += xp;
+			player.allTimeXp += xp;
 
 			// Level up if player has enough XP.
 			while (player.xp >= player.xpToNextLevel) {
@@ -493,14 +496,14 @@ function simulateGame(players)
 				player.xp -= player.xpToNextLevel;
 				player.level++;
 				player.xpToNextLevel = expRequiredToLevel(player.level);
-
-				console.log(player.name + " leveled to " + player.level);
 			}
 		}
+
 		// Calculate loser XP loss.
 		else {
 			// Lost XP is the level of the player.
 			var xp = player.level;
+			player.allTimeXp = Math.max(0, player.allTimeXp - xp);
 
 			// Remove levels from the player when the lost XP exceeds the amount of XP the player has.
 			while (xp > player.xp) {
@@ -520,6 +523,13 @@ function simulateGame(players)
 
 			player.xp -= xp;
 		}
+
+		// Add the datapoint to player history.
+		player.history.push({
+			level: player.level,
+			xp: player.allTimeXp,
+			gameStarted: gameStarted
+		});
 	}
 }
 
@@ -572,12 +582,7 @@ function simulateGames()
 				};
 
 				// Simulate the game with these players.
-				simulateGame(players);
-			}
-
-			console.log("----------------------------------------");
-			for (var j = 0, c2 = stats.players.length; j < c2; j++) {
-				console.log(stats.players[j].name + ", XP: " + stats.players[j].xp + ", Level: " + stats.players[j].level);
+				simulateGame(players, rows[i].time_started);
 			}
 		}
 	);
