@@ -64,12 +64,19 @@ class StatsScreen extends React.Component
 	renderColourWins()
 	{
 		const stats = this.state.stats;
+		var totalWins = stats.winsRed + stats.winsYellow + stats.winsGreen + stats.winsBlue;
+		
 		const data = [
-			{name: "Punainen", value: Math.round(100 * stats.winsRed / stats.totalGames)},
-			{name: "Keltainen", value: Math.round(100 * stats.winsYellow / stats.totalGames)},
-			{name: "Vihreä", value: Math.round(100 * stats.winsGreen / stats.totalGames)},
-			{name: "Sininen", value: Math.round(100 * stats.winsBlue / stats.totalGames)}
+			{name: "Punainen", value: Math.round(100 * stats.winsRed / totalWins)},
+			{name: "Keltainen", value: Math.round(100 * stats.winsYellow / totalWins)},
+			{name: "Vihreä", value: Math.round(100 * stats.winsGreen / totalWins)},
+			{name: "Sininen", value: Math.round(100 * stats.winsBlue / totalWins)}
 		];
+
+		console.log(data[0].value);
+		console.log(data[1].value);
+		console.log(data[2].value);
+		console.log(data[3].value);
 
 		return (
 			<div className="chart-container">
