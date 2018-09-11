@@ -57,23 +57,53 @@ class PlayerStatsScreen extends React.Component
 
 	renderXpBar(player, width, height)
 	{
+		var currentXp = Math.floor(player.xp);
 		var xpToNextLevel = this.xpRequiredToLevel(player.level + 1);
+
+		// Start the XP bar animation.
+		var startTime = (new Date()).getTime();
+
+		this.animateXpBar(width * (currentXp / xpToNextLevel), startTime, 500);
 
 		return (
 			<div className="xp" width={width}>
 
 				<div className="xp-bar-texts" width={width}>
 					<div className="level-text">Taso {player.level}</div>
-					<div className="xp-text">{player.xp.toFixed(0)} / {xpToNextLevel}</div>
+					<div className="xp-text">{currentXp} / {xpToNextLevel}</div>
 				</div>
 
 				<svg width={width} height={height}>
 					<rect className="xp-background" width={width} height={height} />
-					<rect className="xp-bar" width={width * (player.xp / xpToNextLevel)} height={height} />
+					<rect className="xp-bar" width={0} height={height} id="xp-bar" />
 				</svg>
 
 			</div>
 		);
+	}
+
+	animateXpBar(targetWidth, startTime, animationTime)
+	{
+		var finished = false;
+
+		var bar = document.getElementById("xp-bar");
+		if (bar) {
+
+			var now = (new Date()).getTime();
+			var elapsedTime = now - startTime;
+			var t = (elapsedTime / animationTime);
+
+			if (t >= 1) {
+				t = 1;
+				finished = true;
+			}
+
+			bar.setAttribute("width", (t * targetWidth) + "px");
+		}
+
+		if (!finished) {
+			setTimeout(() => this.animateXpBar(targetWidth, startTime, animationTime), 5);
+		}
 	}
 
 	renderPlayerStats()
