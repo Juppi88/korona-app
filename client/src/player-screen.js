@@ -50,6 +50,32 @@ class PlayerStatsScreen extends React.Component
 		return -1;
 	}
 
+	xpRequiredToLevel(level)
+	{
+		return (Math.pow(level, 2) + level) / 2;
+	}
+
+	renderXpBar(player, width, height)
+	{
+		var xpToNextLevel = this.xpRequiredToLevel(player.level + 1);
+
+		return (
+			<div className="xp" width={width}>
+
+				<div className="xp-bar-texts" width={width}>
+					<div className="level-text">Taso {player.level}</div>
+					<div className="xp-text">{player.xp.toFixed(0)} / {xpToNextLevel}</div>
+				</div>
+
+				<svg width={width} height={height}>
+					<rect className="xp-background" width={width} height={height} />
+					<rect className="xp-bar" width={width * (player.xp / xpToNextLevel)} height={height} />
+				</svg>
+
+			</div>
+		);
+	}
+
 	renderPlayerStats()
 	{
 		// No player selected.
@@ -68,7 +94,7 @@ class PlayerStatsScreen extends React.Component
 			history.push({
 				date: date.getDate() + "." + (date.getMonth() + 1) + ".",
 				level: player.history[i].level,
-				xp: player.history[i].xp
+				xp: 1.0 * player.history[i].xp.toFixed(1)
 			});
 		}
 
@@ -79,10 +105,18 @@ class PlayerStatsScreen extends React.Component
 
 		return (
 			<div className="player-stats">
-				<ul className="list-left">
-					<li>Pelejä: <span>{player.totalGames}</span></li>
-					<li>Voittoja: <span>{player.wins} ({(100 * player.wins / player.totalGames).toFixed(0)} %)</span></li>
-				</ul>
+
+				{this.renderXpBar(player, 520, 8)}
+
+				<div className="player-stat-list">
+					<div className="list-left">
+						<div>Pelejä: <span>{player.totalGames}</span></div>
+					</div>
+					<div className="list-right">
+						<div>Voittoja: <span>{player.wins} ({(100 * player.wins / player.totalGames).toFixed(0)} %)</span></div>
+					</div>
+				</div>
+
 				<LineChart width={650} height={300} data={history}>
 					<CartesianGrid strokeDasharray="3 3"/>
 					<XAxis dataKey="date"/>
@@ -93,6 +127,7 @@ class PlayerStatsScreen extends React.Component
 					<Line yAxisId="left" type="linear" dataKey="level" stroke="#8884d8" activeDot={{r: 8}}/>
 					<Line yAxisId="right" type="linear" dataKey="xp" stroke="#82ca9d" />
 				</LineChart>
+
 			</div>
 		);
 	}

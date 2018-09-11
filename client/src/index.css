@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Hind+Madurai');
+@import url('https://fonts.googleapis.com/css?family=Play');
 
 * , *:before, *:after { 
 	box-sizing: border-box;
@@ -166,12 +167,16 @@ button:hover {
 	margin-left: 4rem;
 }
 
-.stats-container li {
+.stats-container li,
+.list-left,
+.list-right {
 	color: var(--colour);
 	list-style: none;
 }
 
-.stats-container li span {
+.stats-container li span,
+.list-left span,
+.list-right span {
 	color: black;
 }
 
@@ -193,8 +198,60 @@ button:hover {
 }
 
 select, optgroup {
+	font-family: 'Hind Madurai', sans-serif;
 	font-size: 1.4rem;
 	margin-top: 0.5rem;
 	padding: 0.2rem;
-	font-family: 'Hind Madurai', sans-serif;
+}
+
+.xp,
+.xp-bar-texts,
+.player-stat-list {
+	width: 520px;
+	margin: 0 auto;
+}
+
+.xp {
+	margin-top: 1rem;
+}
+
+.xp .level-text,
+.xp .xp-text {
+	font-family: 'Play', sans-serif;
+	margin-bottom: -8px;
+	display: inline-block;
+	float: left;
+}
+
+.xp .xp-text {
+	float: right;
+}
+
+.xp-background,
+.xp-bar {
+	stroke: black;
+	stroke-width: 1;
+}
+
+.xp-background {
+	fill: #666699;
+}
+
+.xp-bar {
+	fill: #3af;
+}
+
+.player-stat-list {
+	margin-top: 0.75rem;
+	margin-bottom: 2.5rem;
+}
+
+.list-left {
+	display: inline-block;
+	float: left;
+}
+
+.list-right {
+	display: inline-block;
+	float: right;
 }
