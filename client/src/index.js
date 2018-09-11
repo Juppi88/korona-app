@@ -27,6 +27,24 @@ const COLOUR_YELLOW = 1;
 const COLOUR_GREEN = 2;
 const COLOUR_BLUE = 3;
 
+
+const POS_TOP = 0;
+const POS_RIGHT = 1;
+const POS_LEFT = 2;
+const POS_BOTTOM = 3;
+
+//    R
+//   ___
+// Y |_| B
+//    G
+
+const Positions = [
+	POS_TOP, // Red
+	POS_LEFT, // Yellow
+	POS_BOTTOM, // Green
+	POS_RIGHT, // Blue
+];
+
 // --------------------------------------------------------------------------------
 
 class Game extends React.Component
@@ -63,15 +81,49 @@ class Game extends React.Component
 		return array;
 	}
 
+	getOppositeColour(colour)
+	{
+		var position = Positions[colour];
+		var opposite = POS_TOP;
+
+		// Get the opposite position.
+		switch (position) {
+			case POS_TOP: opposite = POS_BOTTOM; break;
+			case POS_BOTTOM: opposite = POS_TOP; break;
+			case POS_LEFT: opposite = POS_RIGHT; break;
+			default: opposite = POS_LEFT; break;
+		}
+
+		// Find the colour occupying the opposite position.
+		for (var i = 0; i < 4; i++) {
+
+			if (Positions[i] === opposite) {
+				return i;
+			}
+		}
+
+		console.error("Could not find opposite colour!");
+		return 0;
+	}
+
 	randomizeColours(players)
 	{
 		// Shuffle the colours.
 		const colours = [ COLOUR_RED, COLOUR_YELLOW, COLOUR_GREEN, COLOUR_BLUE ];
 		this.shuffleArray(colours);
 
-		// Assign each player a colour.
-		for (var i = 0, c = players.length; i < c; i++) {
-			players[i].colour = colours[i];
+		if (players.length === 2) {
+
+			// Ensure the players are opposite to each other in a two-player game.
+			players[0].colour = colours[0];
+			players[1].colour = this.getOppositeColour(colours[0]);
+		}
+		else {
+
+			// Assign each player a random colour.
+			for (var i = 0, c = players.length; i < c; i++) {
+				players[i].colour = colours[i];
+			}
 		}
 	}
 
