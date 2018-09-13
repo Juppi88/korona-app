@@ -537,7 +537,7 @@ function recordGameXp(players, gameStarted)
 				if (i == j) continue; // Skip the player themself
 
 				if (players[j].statsIndex >= 0) {
-					xp += player.level;
+					xp += stats.players[players[j].statsIndex].level;
 				}
 			}
 
