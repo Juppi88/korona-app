@@ -49,6 +49,7 @@ class LogScreen extends React.Component
 		const days = [ "Su", "Ma", "Ti", "Ke", "To", "Pe", "La" ];
 
 		var date = new Date(game.timeStarted * 1000);
+		var duration = Math.floor((game.timeEnded - game.timeStarted) / 60);
 		var winners = [];
 		var others = [];
 
@@ -87,6 +88,7 @@ class LogScreen extends React.Component
 		return (
 			<tr key={i} className={i % 2 ? "second-row" : "first-row"}>
 				<td>{days[date.getDay()]} {date.getHours().toString().padStart(2, '0')}:{date.getMinutes().toString().padStart(2, '0')}</td>
+				<td>{duration} min</td>
 				<td>{winners}</td>
 				<td>{others}</td>
 			</tr>
@@ -115,8 +117,9 @@ class LogScreen extends React.Component
 				<tbody>
 					<tr>
 						<th width="100">Aika</th>
-						<th width="175">Voittaja</th>
-						<th width="225">Muut pelaajat</th>
+						<th width="90">Kesto</th>
+						<th width="165">Voittaja</th>
+						<th width="215">Muut pelaajat</th>
 					</tr>
 					{games}
 				</tbody>

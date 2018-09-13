@@ -321,3 +321,11 @@ select, optgroup {
 .results-container .xp {
 	margin-top: 0.75rem;
 }
+
+.logs {
+	color: var(--colour);
+}
+
+.logs td {
+	color: black;
+}
