@@ -124,7 +124,8 @@ button:hover {
 	left: 12rem;
 }
 
-.stats-container {
+.stats-container,
+.results-container {
 	border-spacing: 0;
 	border-collapse: collapse;
 	display: inline-block;
@@ -254,4 +255,69 @@ select, optgroup {
 .list-right {
 	display: inline-block;
 	float: right;
+}
+
+/* Level up animation */
+@keyframes level-up-animation {
+	0% {
+		opacity : 0;
+	}
+	1% {
+		opacity : 1;
+		font-size: 2rem;
+	}
+	100% {
+		opacity : 0;
+		font-size: 0.5rem;
+	}
+}
+
+.arrow-container {
+	display: inline;
+	position: absolute;
+	float: right;
+	margin: -0.25rem 0 0 0;
+	text-align: center;
+	vertical-align: middle;
+	width: 3rem;
+}
+
+.level-up-arrow,
+.level-down-arrow {
+	display: inline !important;
+	animation: level-up-animation 3s;
+	animation-play-state: paused;
+	font-size: 2rem;
+	opacity: 0;
+}
+
+.level-up-arrow {
+	color: green;
+}
+
+.level-down-arrow {
+	color: red;
+}
+
+@keyframes xp-up-animation {
+	0% {
+		fill: #c1e7ff;
+	}
+	100% {
+		fill: #3af;
+	}
+}
+
+.run-xp-up-animation {
+	animation: xp-up-animation 1.5s;
+	animation-delay: 1s;
+}
+
+.results-container h2 {
+	margin-top: 1.5rem;
+	margin-bottom: 0;
+}
+
+.results-container .xp {
+	margin-top: 0.75rem;
 }

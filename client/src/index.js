@@ -4,6 +4,7 @@ import PlayerSelector from './player-selector.js';
 import PlayerList from './player-list.js';
 import StatsScreen from './stats-screen.js';
 import PlayerStatsScreen from './player-screen.js';
+import ResultScreen from './result-screen.js';
 import LogScreen from './log-screen.js';
 import PieChart from '@material-ui/icons/PieChart';
 import Person from '@material-ui/icons/Person';
@@ -246,6 +247,19 @@ class Game extends React.Component
 
 	render()
 	{
+		/*var results = [
+			{ name: "Tuomo", isWinner: true, level: 5, xp: 18, xpGained: 12 },
+			{ name: "Dude", isWinner: false, level: 5, xp: 2, xpGained: -15 },
+			{ name: "Janteri", isWinner: false, level: 4, xp: 2, xpGained: -10 },
+			{ name: "Hemmo", isWinner: false, level: 6, xp: 12, xpGained: -7 },
+		];
+
+		return (
+			<div className="game-container">
+				<ResultScreen results={results}/>
+			</div>
+		);*/
+
 		if (this.state.view === VIEW_STATS)
 		{
 			// Render the stats screen
