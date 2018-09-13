@@ -128,7 +128,7 @@ class PlayerList extends React.Component
 					<ul>{playerList}</ul>
 				</div>
 				<div className="bottom-menu">
-					<button onClick={() => this.startNewGame()} className="start-button">{isWinnerMarked ? "Tallenna & Uusi Peli" : "Uusi Peli"}</button>
+					<button onClick={() => this.startNewGame()} className="start-button">{isWinnerMarked ? "Tallenna tulokset" : "Uusi Peli"}</button>
 				</div>
 			</div>
 		);

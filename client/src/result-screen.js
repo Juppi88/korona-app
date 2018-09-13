@@ -51,7 +51,7 @@ class ResultScreen extends React.Component
 		const FreezeTime = 1000;
 
 		setTimeout(
-			() => this.animateXpBar(player, width, startTime + FreezeTime, 1000, false),
+			() => this.animateXpBar(player, width, startTime + FreezeTime, 1500, false),
 			FreezeTime);
 
 		return (
@@ -193,7 +193,7 @@ class ResultScreen extends React.Component
 
 				<br/>
 				<div className="bottom-menu">
-					<button onClick={() => {}} className="start-button">Uusi Peli</button>
+					<button onClick={() => this.props.onExit()} className="start-button">Uusi Peli</button>
 				</div>
 			</div>
 		);

@@ -75,11 +75,6 @@ class StatsScreen extends React.Component
 			{name: "Sininen", value: Math.round(100 * stats.winsBlue / totalWins)}
 		];
 
-		console.log(data[0].value);
-		console.log(data[1].value);
-		console.log(data[2].value);
-		console.log(data[3].value);
-
 		return (
 			<div className="chart-container">
 				<h2>Voitot väreittäin</h2>

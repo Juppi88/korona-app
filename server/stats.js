@@ -170,10 +170,10 @@ module.exports.saveGameToLog = function(game)
 	}
 
 	// Update the stats cache.
-	updateStats(game, winnerFlags);
+	var results = updateStats(game, winnerFlags);
 
 	// Return the log index of the game that was just inserted.
-	return logIndex;
+	return results;
 };
 
 module.exports.addName = function(name)
@@ -326,7 +326,7 @@ function updateStats(game, winnerFlags)
 	};
 
 	// Record XP/level changes.
-	recordGameXp(log.players, game.startTime);
+	var xpChanges = recordGameXp(log.players, game.startTime);
 
 	logs.splice(0, 0, log);
 
@@ -334,6 +334,8 @@ function updateStats(game, winnerFlags)
 	while (logs.length > 10) {
 		logs.splice(logs.length - 1, 1);
 	}
+
+	return xpChanges;
 }
 
 function cacheStats()
@@ -509,6 +511,9 @@ function recordGameXp(players, gameStarted)
 		if (players[i].name) playerCount++;
 	}
 
+	// Save all XP changes.
+	var xpChanges = [];
+
 	for (var i = 0, c = players.length; i < c; i++) {
 
 		if (!players[i].name || players[i].statsIndex < 0) {
@@ -516,6 +521,9 @@ function recordGameXp(players, gameStarted)
 		}
 
 		const player = stats.players[players[i].statsIndex];
+		var xpGain = 0;
+
+		xpChanges.push({ name: player.name, isWinner: players[i].isWinner, level: player.level, xp: player.xp, xpGained: 0 });
 
 		// Calculate winner XP gain.
 		if (players[i].isWinner) {
@@ -535,6 +543,7 @@ function recordGameXp(players, gameStarted)
 
 			player.xp += xp;
 			player.allTimeXp += xp;
+			xpGain = xp;
 
 			// Level up if player has enough XP.
 			while (player.xp >= player.xpToNextLevel) {
@@ -569,7 +578,11 @@ function recordGameXp(players, gameStarted)
 			}
 
 			player.xp -= xpLoss;
+			xpGain = -xpLoss;
 		}
+
+		// Update player XP gain in the game.
+		xpChanges[xpChanges.length - 1].xpGained = xpGain;
 
 		// Add the datapoint to player history.
 		player.history.push({
@@ -578,6 +591,8 @@ function recordGameXp(players, gameStarted)
 			gameStarted: gameStarted
 		});
 	}
+
+	return xpChanges;
 }
 
 function recordGames()

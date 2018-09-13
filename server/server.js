@@ -31,10 +31,10 @@ app.put("/api/game", (req, res) => {
 	if (req.body.hasOwnProperty("players") &&
 		req.body.hasOwnProperty("starter")) {
 
-		gameIndex = stats.saveGameToLog(req.body);
+		results = stats.saveGameToLog(req.body);
 	}
 
-	res.send({ gameIndex: gameIndex });
+	res.send({ results: results });
 });
 
 app.get("/api/stats", (req, res) => {

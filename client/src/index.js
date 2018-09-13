@@ -16,6 +16,7 @@ import './index.css';
 
 const STATE_PLAYERS = 0; // Selecting players
 const STATE_GAME = 1; // Game started, displaying the player list
+const STATE_RESULTS = 2; // Viewing game results
 
 const VIEW_DEFAULT = 0; // Default screen, no stats
 const VIEW_STATS = 1; // Generic game stats (top players, wins etc.)
@@ -61,7 +62,8 @@ class Game extends React.Component
 			state: STATE_PLAYERS,
 			players: null,
 			gameStarted: 0,
-			view: VIEW_DEFAULT
+			view: VIEW_DEFAULT,
+			results: []
 		};
 	}
 
@@ -179,6 +181,13 @@ class Game extends React.Component
 		});
 	}
 
+	onResultsViewed()
+	{
+		this.setState({
+			state: STATE_PLAYERS
+		});
+	}
+
 	onGameFinished(players)
 	{
 		// Compile a list of winners for the game.
@@ -193,14 +202,18 @@ class Game extends React.Component
 
 		// Save game info into the log when the winners have been selected.
 		if (winners.length > 0) {
-			this.saveGameResultsToLog(players, winners);
-		}
 
-		// Reset the state and go back to player selection.
-		this.setState({
-			state: STATE_PLAYERS,
-			players: []
-		});
+			this.saveGameResultsToLog(players, winners);
+			this.setState({
+				players: []
+			});
+		}
+		else {
+			this.setState({
+				players: [],
+				state: STATE_PLAYERS,
+			});
+		}
 	}
 
 	saveGameResultsToLog(playerInfo, winners)
@@ -228,6 +241,8 @@ class Game extends React.Component
 		}
 
 		// Save the game info to the log using the PUT method for games.
+		var instance = this;
+
 		fetch('/api/game', {
 				method: "PUT",
 				body: JSON.stringify({
@@ -242,24 +257,22 @@ class Game extends React.Component
 					'Content-Type': 'application/json'
 				}
 			}
-		);
+		)
+		.then(function(response) {
+			return response.json();
+		})
+		.then(function(json) {
+
+			// Display the results screen.
+			instance.setState({
+				state: STATE_RESULTS,
+				results: json.results,
+			});
+		});
 	}
 
 	render()
 	{
-		/*var results = [
-			{ name: "Tuomo", isWinner: true, level: 5, xp: 18, xpGained: 12 },
-			{ name: "Dude", isWinner: false, level: 5, xp: 2, xpGained: -15 },
-			{ name: "Janteri", isWinner: false, level: 4, xp: 2, xpGained: -10 },
-			{ name: "Hemmo", isWinner: false, level: 6, xp: 12, xpGained: -7 },
-		];
-
-		return (
-			<div className="game-container">
-				<ResultScreen results={results}/>
-			</div>
-		);*/
-
 		if (this.state.view === VIEW_STATS)
 		{
 			// Render the stats screen
@@ -299,6 +312,14 @@ class Game extends React.Component
 				<div className="game-container">
 					<PlayerList players={players} onFinished={ this.onGameFinished.bind(this) }/>
 					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon"/>
+				</div>
+			);
+		}
+		else if (this.state.state === STATE_RESULTS)
+		{
+			return (
+				<div className="game-container">
+					<ResultScreen results={this.state.results} onExit={ this.onResultsViewed.bind(this) }/>
 				</div>
 			);
 		}
