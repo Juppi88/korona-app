@@ -78,11 +78,11 @@ class StatsScreen extends React.Component
 		return (
 			<div className="chart-container">
 				<h2>Voitot väreittäin</h2>
-				<PieChart width={360} height={180}>
+				<PieChart width={360} height={190}>
 					<Pie
 						data={data}
 						cx={180}
-						cy={82}
+						cy={88}
 						labelLine={false}
 						label={<CustomizedLabel/>}
 						outerRadius={70}
