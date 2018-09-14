@@ -521,6 +521,15 @@ function recordGameXp(players, gameStarted)
 	// Save all XP changes.
 	var xpChanges = [];
 
+	// Cache player levels before calculating XP.
+	var levels = Array(players.length);
+		
+	for (var j = 0; j < players.length; j++) {
+		if (players[j].statsIndex >= 0) {
+			levels[j] = stats.players[players[j].statsIndex].level;
+		}
+	}
+
 	for (var i = 0, c = players.length; i < c; i++) {
 
 		if (!players[i].name || players[i].statsIndex < 0) {
@@ -544,7 +553,7 @@ function recordGameXp(players, gameStarted)
 				if (i == j) continue; // Skip the player themself
 
 				if (players[j].statsIndex >= 0) {
-					xp += stats.players[players[j].statsIndex].level;
+					xp += levels[j];
 				}
 			}
 
@@ -565,7 +574,7 @@ function recordGameXp(players, gameStarted)
 		// Calculate loser XP loss.
 		else {
 			// Lost XP is the level of the player.
-			var xpLoss = 1.0 * player.level / playerCount;
+			var xpLoss = 1.0 * levels[i] / playerCount;
 			player.allTimeXp = Math.max(0, player.allTimeXp - xpLoss);
 
 			// Remove levels from the player when the lost XP exceeds the amount of XP the player has.
