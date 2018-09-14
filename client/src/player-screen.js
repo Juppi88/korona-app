@@ -151,6 +151,7 @@ class PlayerStatsScreen extends React.Component
 
 		// Order the colour stats by win ratio, or by win count if they're equal.
 		colours.sort((a, b) => {
+
 			var ratioA = a.wins / a.games;
 			var ratioB = b.wins / b.games;
 
@@ -182,8 +183,8 @@ class PlayerStatsScreen extends React.Component
 						<div>Voittoja: <span>{player.wins} ({(100 * player.wins / player.totalGames).toFixed(0)}%)</span></div>
 					</div>
 					<div className="list-right">
-						<div>Vahvin: <span><span style={{ color: Colours[colours[0].colour]}}>{colourNames[colours[0].colour]}</span> ({(100 * colours[0].wins / colours[0].games).toFixed(0)}%)</span></div>
-						<div>Heikoin: <span><span style={{ color: Colours[colours[3].colour]}}>{colourNames[colours[3].colour]}</span> ({(100 * colours[3].wins / colours[3].games).toFixed(0)}%)</span></div>
+						<div>Vahvin: <span><span style={{ color: Colours[colours[0].colour]}}>{colourNames[colours[0].colour]}</span> ({(colours[0].games ? 100 * colours[0].wins / colours[0].games : 0).toFixed(0)}%)</span></div>
+						<div>Heikoin: <span><span style={{ color: Colours[colours[3].colour]}}>{colourNames[colours[3].colour]}</span> ({(colours[3].games ? 100 * colours[3].wins / colours[3].games : 0).toFixed(0)}%)</span></div>
 					</div>
 				</div>
 

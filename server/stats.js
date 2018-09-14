@@ -280,12 +280,31 @@ function updateStats(game, winnerFlags)
 			var player = stats.players.find((x) => { return x.id == id; });
 
 			if (player != null) {
+				
 				player.totalGames++;
 
-				if (i == COLOUR_RED && winnerFlags & 1) player.wins++;
-				else if (i == COLOUR_YELLOW && winnerFlags & 2) player.wins++;
-				else if (i == COLOUR_GREEN && winnerFlags & 4) player.wins++;
-				else if (i == COLOUR_BLUE && winnerFlags & 8) player.wins++;
+				player.winsRed = getAtIndex(row, 1);
+						player.winsYellow = getAtIndex(row, 2);
+						player.winsGreen = getAtIndex(row, 3);
+						player.winsBlue = getAtIndex(row, 4);
+						player.gamesRed = getAtIndex(row, 5);
+						player.gamesYellow = getAtIndex(row, 6);
+						player.gamesGreen = getAtIndex(row, 7);
+						player.gamesBlue = getAtIndex(row, 8);
+
+				// Increase total wins and wins per colour.
+				if (i == COLOUR_RED && winnerFlags & 1) { player.wins++; player.winsRed++; }
+				else if (i == COLOUR_YELLOW && winnerFlags & 2) { player.wins++; player.winsYellow++; }
+				else if (i == COLOUR_GREEN && winnerFlags & 4) { player.wins++; player.winsGreen++; }
+				else if (i == COLOUR_BLUE && winnerFlags & 8)  { player.wins++; player.winsBlue++; }
+
+				// Increase games per colour.
+				switch (i) {
+					case COLOUR_RED: player.gamesRed++; break;
+					case COLOUR_YELLOW: player.gamesYellow++; break;
+					case COLOUR_GREEN: player.gamesGreen++; break;
+					case COLOUR_BLUE: player.gamesBlue++; break;
+				}
 			}
 		}
 	}
