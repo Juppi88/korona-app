@@ -68,19 +68,19 @@ button:hover {
 .player-list {
 	margin: auto;
 	margin-top: 0.5rem;
-	width: 20rem;
+	width: 21rem;
 }
 
 .player-list ul {
 	text-align: left;
 	list-style: none;
-	margin-top: 1.5rem;
+	margin-top: 1.0rem;
 }
 
 .player { /* Container for player info (disk color, name) */
 	font-size: 1.5rem;
 	padding: 0.4rem;
-	padding-left: 1rem;
+	padding-left: 2rem;
 }
 
 .player:hover {
@@ -112,17 +112,20 @@ button:hover {
 	font-size: 4rem !important;
 	color: var(--colour);
 	position: absolute;
-	left: 2rem;
-	bottom: 2rem;
+	bottom: 1.5rem;
 	cursor: pointer;
 }
 
+.stats-icon.first {
+	left: 1.5rem;
+}
+
 .stats-icon.second {
-	left: 7rem;
+	left: 6.5rem;
 }
 
 .stats-icon.third {
-	left: 12rem;
+	left: 11rem;
 }
 
 .clock {

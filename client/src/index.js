@@ -279,7 +279,7 @@ class Game extends React.Component
 			return (
 				<div className="game-container">
 					<StatsScreen/>
-					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon"/>
+					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon first"/>
 				</div>
 			);
 		}
@@ -289,7 +289,7 @@ class Game extends React.Component
 			return (
 				<div className="game-container">
 					<LogScreen/>
-					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon"/>
+					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon first"/>
 				</div>
 			);
 		}
@@ -299,7 +299,7 @@ class Game extends React.Component
 			return (
 				<div className="game-container">
 					<PlayerStatsScreen/>
-					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon"/>
+					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon first"/>
 				</div>
 			);
 		}
@@ -311,7 +311,9 @@ class Game extends React.Component
 			return (
 				<div className="game-container">
 					<PlayerList players={players} gameStarted={this.state.gameStarted} onFinished={ this.onGameFinished.bind(this) }/>
-					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon"/>
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
+					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
+					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
 				</div>
 			);
 		}
@@ -331,7 +333,7 @@ class Game extends React.Component
 
 					<PlayerSelector onReady={ this.onGameStarted.bind(this) }/>
 
-					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon"/>
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
 					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
 					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
 
