@@ -567,7 +567,7 @@ function recordGameXp(players, gameStarted)
 				// DING! Level up
 				player.xp -= player.xpToNextLevel;
 				player.level++;
-				player.xpToNextLevel = expRequiredToLevel(player.level);
+				player.xpToNextLevel = expRequiredToLevel(player.level + 1);
 			}
 		}
 
