@@ -310,7 +310,7 @@ class Game extends React.Component
 
 			return (
 				<div className="game-container">
-					<PlayerList players={players} onFinished={ this.onGameFinished.bind(this) }/>
+					<PlayerList players={players} gameStarted={this.state.gameStarted} onFinished={ this.onGameFinished.bind(this) }/>
 					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon"/>
 				</div>
 			);

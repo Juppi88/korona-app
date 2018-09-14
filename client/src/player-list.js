@@ -19,7 +19,11 @@ class PlayerList extends React.Component
 
 		this.state = {
 			players: props.players,
+			gameStarted: props.gameStarted,
+			isUpdatingTime: false
 		};
+
+		this.updateTime();
 	}
 
 	startNewGame()
@@ -42,6 +46,24 @@ class PlayerList extends React.Component
 
 		// Call the game finished method of the Game class.
 		this.props.onFinished(players);
+	}
+
+	updateTime()
+	{
+		setTimeout(() => this.updateTime(), 1000);
+
+		var timeLabel = document.getElementById("clock");
+
+		if (!timeLabel) {
+			return;
+		}
+
+		var now = Math.floor(new Date() / 1000);
+		var duration = now - this.state.gameStarted;
+		var minutes = Math.floor(duration / 60);
+		var seconds = duration - 60 * minutes;
+
+		timeLabel.innerHTML = minutes.toString() + ":" + seconds.toString().padStart(2, '0');
 	}
 
 	renderDisc(size, colour)
@@ -130,6 +152,7 @@ class PlayerList extends React.Component
 				<div className="bottom-menu">
 					<button onClick={() => this.startNewGame()} className="start-button">{isWinnerMarked ? "Tallenna tulokset" : "Uusi Peli"}</button>
 				</div>
+				<div id="clock"className="clock">0:00</div>
 			</div>
 		);
 	}

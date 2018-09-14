@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Hind+Madurai');
 @import url('https://fonts.googleapis.com/css?family=Play');
+@import url('https://fonts.googleapis.com/css?family=Nova+Mono');
 
 * , *:before, *:after { 
 	box-sizing: border-box;
@@ -122,6 +123,17 @@ button:hover {
 
 .stats-icon.third {
 	left: 12rem;
+}
+
+.clock {
+	font-family: 'Nova Mono', monospace;
+	font-size: 2.5rem;
+	font-weight: bold;
+	color: var(--colour);
+	position: absolute;
+	right: 2.25rem;
+	bottom: 2.25rem;
+	text-align: right;
 }
 
 .stats-container,
