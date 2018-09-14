@@ -416,8 +416,17 @@ function cachePlayerStats(db)
 		var id = player.id;
 
 		db.get(
-			`SELECT ?, COUNT(*) FROM game_log WHERE plr_red = ? OR plr_yellow = ? OR plr_green = ? OR plr_blue = ?;`,
-			id, id, id, id, id,
+			`SELECT ? AS player,
+				SUM(CASE WHEN (plr_red = ? AND winners & 1) THEN 1 ELSE 0 END) AS wins_red,
+				SUM(CASE WHEN (plr_yellow = ? AND winners & 2) THEN 1 ELSE 0 END) AS wins_yellow,
+				SUM(CASE WHEN (plr_green = ? AND winners & 4) THEN 1 ELSE 0 END) AS wins_green,
+				SUM(CASE WHEN (plr_blue = ? AND winners & 8) THEN 1 ELSE 0 END) AS wins_blue,
+				SUM(CASE WHEN (plr_red = ?) THEN 1 ELSE 0 END) AS games_red,
+				SUM(CASE WHEN (plr_yellow = ?) THEN 1 ELSE 0 END) AS games_yellow,
+				SUM(CASE WHEN (plr_green = ?) THEN 1 ELSE 0 END) AS games_green,
+				SUM(CASE WHEN (plr_blue = ?) THEN 1 ELSE 0 END) AS games_blue
+				FROM game_log;`,
+			id, id, id, id, id, id, id, id, id,
 			(err, row) => {
 
 				if (row) {
@@ -425,29 +434,17 @@ function cachePlayerStats(db)
 					var player = stats.players.find((x) => { return x.id == id; });
 
 					if (player) {
-						player.totalGames = getAtIndex(row, 1);
-					}
-				}
-			}
-		);
+						player.winsRed = getAtIndex(row, 1);
+						player.winsYellow = getAtIndex(row, 2);
+						player.winsGreen = getAtIndex(row, 3);
+						player.winsBlue = getAtIndex(row, 4);
+						player.gamesRed = getAtIndex(row, 5);
+						player.gamesYellow = getAtIndex(row, 6);
+						player.gamesGreen = getAtIndex(row, 7);
+						player.gamesBlue = getAtIndex(row, 8);
 
-		// Get the number of wins for each player.
-		db.get(
-			`SELECT ?, COUNT(*) FROM game_log WHERE
-				(plr_red = ? AND winners & 1) OR
-				(plr_yellow = ? AND winners & 2) OR
-				(plr_green = ? AND winners & 4) OR
-				(plr_blue = ? AND winners & 8);`,
-				id, id, id, id, id,
-
-			(err, row) => {
-
-				if (row) {
-					var id = getAtIndex(row, 0);
-					var player = stats.players.find((x) => { return x.id == id; });
-
-					if (player) {
-						player.wins = getAtIndex(row, 1);
+						player.totalGames = player.gamesRed + player.gamesYellow + player.gamesGreen + player.gamesBlue;
+						player.wins = player.winsRed + player.winsYellow + player.winsGreen + player.winsBlue;
 					}
 				}
 			}

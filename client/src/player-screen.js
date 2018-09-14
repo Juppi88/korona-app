@@ -3,6 +3,20 @@ import { LineChart, XAxis, YAxis, Tooltip, Legend, Line, CartesianGrid } from "r
 
 // --------------------------------------------------------------------------------
 
+const COLOUR_RED = 0;
+const COLOUR_YELLOW = 1;
+const COLOUR_GREEN = 2;
+const COLOUR_BLUE = 3;
+
+const Colours = [
+	"#F00", // Red
+	"#CB0", // Yellow
+	"#0B0", // Green
+	"#00F", // Blue
+];
+
+// --------------------------------------------------------------------------------
+
 class PlayerStatsScreen extends React.Component
 {
 	constructor(props)
@@ -128,6 +142,30 @@ class PlayerStatsScreen extends React.Component
 			});
 		}
 
+		var colours = [
+			{ colour: COLOUR_RED, wins: player.winsRed, games: player.gamesRed },
+			{ colour: COLOUR_YELLOW, wins: player.winsYellow, games: player.gamesYellow },
+			{ colour: COLOUR_GREEN, wins: player.winsGreen, games: player.gamesGreen },
+			{ colour: COLOUR_BLUE, wins: player.winsBlue, games: player.gamesBlue }
+		];
+
+		// Order the colour stats by win ratio, or by win count if they're equal.
+		colours.sort((a, b) => {
+			var ratioA = a.wins / a.games;
+			var ratioB = b.wins / b.games;
+
+			if (ratioA > ratioB) return -1;
+			if (ratioA < ratioB) return 1;
+			if (a.wins > b.wins) return -1;
+			if (a.wins < b.wins) return 1;
+			if (a.games > b.games) return -1;
+			if (a.games < b.games) return 1;
+
+			return 0;
+		});
+
+		const colourNames = [ "Punainen", "Keltainen", "Vihreä", "Sininen" ];
+
 		// Only show 10 most recent games in the graph.
 		if (history.length > 10) {
 			history = history.slice(-10);
@@ -141,9 +179,11 @@ class PlayerStatsScreen extends React.Component
 				<div className="player-stat-list">
 					<div className="list-left">
 						<div>Pelejä: <span>{player.totalGames}</span></div>
+						<div>Voittoja: <span>{player.wins} ({(100 * player.wins / player.totalGames).toFixed(0)}%)</span></div>
 					</div>
 					<div className="list-right">
-						<div>Voittoja: <span>{player.wins} ({(100 * player.wins / player.totalGames).toFixed(0)} %)</span></div>
+						<div>Vahvin: <span><span style={{ color: Colours[colours[0].colour]}}>{colourNames[colours[0].colour]}</span> ({(100 * colours[0].wins / colours[0].games).toFixed(0)}%)</span></div>
+						<div>Heikoin: <span><span style={{ color: Colours[colours[3].colour]}}>{colourNames[colours[3].colour]}</span> ({(100 * colours[3].wins / colours[3].games).toFixed(0)}%)</span></div>
 					</div>
 				</div>
 
@@ -153,7 +193,7 @@ class PlayerStatsScreen extends React.Component
 					<YAxis yAxisId="left" allowDecimals={false} domain={[0, 'auto']} />
 					<YAxis yAxisId="right" orientation="right" allowDecimals={false} domain={[0, 'auto']} />
 					<Tooltip/>
-					<Legend />
+					<Legend wrapperStyle={{ bottom: -8 }}/>
 					<Line yAxisId="left" type="linear" dataKey="level" stroke="#8884d8" activeDot={{r: 8}}/>
 					<Line yAxisId="right" type="linear" dataKey="xp" stroke="#82ca9d" />
 				</LineChart>

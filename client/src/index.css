@@ -250,11 +250,13 @@ select, optgroup {
 .list-left {
 	display: inline-block;
 	float: left;
+	text-align: left;
 }
 
 .list-right {
 	display: inline-block;
 	float: right;
+	text-align: left;
 }
 
 /* Level up animation */
