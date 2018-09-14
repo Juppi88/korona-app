@@ -280,17 +280,8 @@ function updateStats(game, winnerFlags)
 			var player = stats.players.find((x) => { return x.id == id; });
 
 			if (player != null) {
-				
-				player.totalGames++;
 
-				player.winsRed = getAtIndex(row, 1);
-						player.winsYellow = getAtIndex(row, 2);
-						player.winsGreen = getAtIndex(row, 3);
-						player.winsBlue = getAtIndex(row, 4);
-						player.gamesRed = getAtIndex(row, 5);
-						player.gamesYellow = getAtIndex(row, 6);
-						player.gamesGreen = getAtIndex(row, 7);
-						player.gamesBlue = getAtIndex(row, 8);
+				player.totalGames++;
 
 				// Increase total wins and wins per colour.
 				if (i == COLOUR_RED && winnerFlags & 1) { player.wins++; player.winsRed++; }
