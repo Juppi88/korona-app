@@ -20,10 +20,9 @@ class PlayerList extends React.Component
 		this.state = {
 			players: props.players,
 			gameStarted: props.gameStarted,
-			isUpdatingTime: false
 		};
 
-		this.updateTime();
+		this.updateTime(true);
 	}
 
 	startNewGame()
@@ -48,9 +47,11 @@ class PlayerList extends React.Component
 		this.props.onFinished(players);
 	}
 
-	updateTime()
+	updateTime(refreshTimer)
 	{
-		setTimeout(() => this.updateTime(), 1000);
+		if (refreshTimer) {
+			setTimeout(() => this.updateTime(true), 1000);
+		}
 
 		var timeLabel = document.getElementById("clock");
 
@@ -142,6 +143,9 @@ class PlayerList extends React.Component
 				</li>
 			));
 		}
+
+		// Force clock update as soon as possible.
+		setTimeout(() => this.updateTime(false), 50);
 
 		return (
 			<div className="player-list-container">
