@@ -112,6 +112,48 @@ class StatsScreen extends React.Component
 		);
 	}
 
+	renderLevels()
+	{
+		const players = this.state.stats.players;
+		var data = [];
+
+		// Sort the players by wins.
+		players.sort((a, b) => {
+			if (a.level !== b.level) return b.level - a.level;
+			if (a.xp !== b.xp) return b.xp - a.xp;
+			return b.totalGames - a.totalGames;
+		});
+
+		// Collect the data of at most 5 players.
+		for (var i = 0, c = Math.min(5, players.length); i < c; i++) {
+
+			const player = players[i];
+			data.push({name: player.name, level: player.level});
+		}
+
+		return this.renderBarChart(350, 180, "#756b91", "Korkein taso", data, "level");
+	}
+
+	renderWinPercentage()
+	{
+		const players = this.state.stats.players;
+		var data = [];
+
+		// Sort the players by wins.
+		players.sort((a, b) => {
+			return (b.wins / b.totalGames) - (a.wins / a.totalGames);
+		});
+
+		// Collect the data of at most 5 players.
+		for (var i = 0, c = Math.min(5, players.length); i < c; i++) {
+
+			const player = players[i];
+			data.push({name: player.name, wins: player.wins, percentage: 1.0 * (100.0 * player.wins / player.totalGames).toFixed(0)});
+		}
+
+		return this.renderBarChart(350, 180, "#756b91", "Paras voittoprosentti", data, "percentage");
+	}
+
 	renderWinsPerPlayer()
 	{
 		const players = this.state.stats.players;
@@ -182,8 +224,8 @@ class StatsScreen extends React.Component
 				<tbody>
 
 					<tr>
-						<td>{this.renderWinsPerPlayer()}</td>
-						<td>{this.renderGamesPerPlayer()}</td>
+						<td>{this.renderLevels()}</td>
+						<td>{this.renderWinPercentage()}</td>
 					</tr>
 					<tr>
 						<td>{this.renderColourWins()}</td>
