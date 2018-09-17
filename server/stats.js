@@ -601,6 +601,7 @@ function recordGameXp(players, gameStarted)
 
 				xpLoss -= player.xp;
 				player.xp = expRequiredToLevel(player.level);
+				player.xpToNextLevel = player.xp;
 				player.level--;
 			}
 

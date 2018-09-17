@@ -41,7 +41,6 @@ class PlayerStatsScreen extends React.Component
 				return response.json();
 			})
 			.then(function(json) {
-			
 				// Save logs to state and re-render page.
 				instance.setState({ stats: json, player: json.players.length > 0 ? 0 : -1 })
 			})
