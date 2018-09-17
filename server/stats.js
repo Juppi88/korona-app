@@ -200,6 +200,17 @@ module.exports.addName = function(name)
 			if (!err) {
 				// Update name indices list.
 				nameIndices.push({ id: this.lastID, name: name });
+
+				// Add a stats entry for the new player.
+				stats.players.push({
+					id: this.lastID,
+					name: name,
+					level: 1,
+					xp: 0,
+					xpToNextLevel: expRequiredToLevel(2),
+					history: [],
+					allTimeXp: 0
+				});
 			}
 		});
 
