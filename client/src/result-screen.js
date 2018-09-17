@@ -104,7 +104,7 @@ class ResultScreen extends React.Component
 
 			requiredXp = this.xpRequiredToLevel(lvl + 1);
 
-			while (requiredXp < currentXp) {
+			while (requiredXp <= currentXp) {
 
 				currentXp -= requiredXp;
 				requiredXp = this.xpRequiredToLevel(++lvl + 1);
