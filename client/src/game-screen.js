@@ -9,6 +9,8 @@ const Colours = [
 	"#00F", // Blue
 ];
 
+var clockTimer = 0;
+
 // --------------------------------------------------------------------------------
 
 class PlayerList extends React.Component
@@ -43,6 +45,13 @@ class PlayerList extends React.Component
 			return;
 		}
 
+		// Stop the clock update timer.
+		if (clockTimer > 0) {
+
+			clearTimeout(clockTimer);
+			clockTimer = 0;
+		}
+
 		// Call the game finished method of the Game class.
 		this.props.onFinished(players);
 	}
@@ -50,7 +59,7 @@ class PlayerList extends React.Component
 	updateTime(refreshTimer)
 	{
 		if (refreshTimer) {
-			setTimeout(() => this.updateTime(true), 1000);
+			clockTimer = setTimeout(() => this.updateTime(true), 1000);
 		}
 
 		var timeLabel = document.getElementById("clock");
