@@ -1,4 +1,5 @@
 import React from 'react';
+import shaka from 'shaka-player';
 
 // --------------------------------------------------------------------------------
 
@@ -11,19 +12,60 @@ const Colours = [
 
 // --------------------------------------------------------------------------------
 
+const StreamSource = "http://192.168.99.10:8090/camera.webm";
+
 class LiveStream extends React.Component
 {
+	componentDidMount()
+	{
+		shaka.polyfill.installAll();
+
+		if (shaka.Player.isBrowserSupported()) {
+			this.initPlayer();
+		} else {
+			console.error('Browser not supported!');
+		}
+	}
+
+	initPlayer()
+	{
+		var player = new shaka.Player(this.refs.video);
+
+		player.addEventListener('error', this.onErrorEvent);
+
+		player.load(StreamSource)
+			.then(function() {
+				console.log('The video has now been loaded!');
+			})
+			.catch(this.onError);
+	}
+	
+	onErrorEvent(event)
+	{
+		this.onError(event.detail);
+	}
+	
+	onError(error)
+	{
+		console.error('Error code', error.code, 'object', error);
+	}
+
+	componentWillUnmount()
+	{
+	}
+
 	render()
 	{
-		//<source src="http://192.168.99.10:8090/test1.mpg"/>
-		/*
-		<video>
-				<source src="http://cdn-fms.rbs.com.br/vod/hls_sample1_manifest.m3u8"/>
-			 	Valitettavasti selaimesi ei tue lähetyksen muotoa.
-			</video>
-		*/
 		return (
-			<h1>WORK IN PROGRESS</h1>
+			<div className="stream-container">
+				<h1>Live Stream: WORK IN PROGRESS</h1>
+				
+				<video
+					ref="video"
+					width="640"
+					controls autoPlay>
+				</video>
+			</div>
 		);
 	}
 }

@@ -346,3 +346,7 @@ select, optgroup {
 .logs td {
 	color: black;
 }
+
+video {
+	border: 1px solid black;
+}
