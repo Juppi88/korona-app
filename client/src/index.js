@@ -389,7 +389,7 @@ class Game extends React.Component
 	{
 		var isLocalHost = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 		
-		if (!isLocalHost) {
+		if (isLocalHost) {
 
 			// Render the full-featured page on the Raspberry Pi (stats and game input).
 			return (
