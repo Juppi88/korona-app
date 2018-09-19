@@ -271,7 +271,7 @@ class Game extends React.Component
 		});
 	}
 
-	render()
+	renderFullMode()
 	{
 		if (this.state.view === VIEW_STATS)
 		{
@@ -337,6 +337,73 @@ class Game extends React.Component
 					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
 					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
 
+				</div>
+			);
+		}
+	}
+
+	renderReadOnlyMode()
+	{
+		if (this.state.view === VIEW_LOGS)
+		{
+			// Render the log screen.
+			return (
+				<div className="game-container">
+					<LogScreen/>
+
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
+					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
+					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+				</div>
+			);
+		}
+		else if (this.state.view === VIEW_PLAYER)
+		{
+			// Render the per-player stats screen.
+			return (
+				<div className="game-container">
+					<PlayerStatsScreen/>
+
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
+					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
+					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+				</div>
+			);
+		}
+		else 
+		{
+			// Render the stats screen
+			return (
+				<div className="game-container">
+					<StatsScreen/>
+
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
+					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
+					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+				</div>
+			);
+		}
+	}
+
+	render()
+	{
+		var isLocalHost = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+		
+		if (!isLocalHost) {
+
+			// Render the full-featured page on the Raspberry Pi (stats and game input).
+			return (
+				<div>
+					{this.renderFullMode()}
+				</div>
+			);
+		}
+		else {
+
+			// Guest is visiting the page from elsewhere in the network, show a read-only version of the page with stats only.
+			return (
+				<div>
+					{this.renderReadOnlyMode()}
 				</div>
 			);
 		}

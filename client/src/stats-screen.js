@@ -151,7 +151,7 @@ class StatsScreen extends React.Component
 			data.push({name: player.name, wins: player.wins, percentage: 1.0 * (100.0 * player.wins / player.totalGames).toFixed(0)});
 		}
 
-		return this.renderBarChart(350, 180, "#756b91", "Paras voittoprosentti", data, "percentage");
+		return this.renderBarChart(350, 180, "#756b91", "Paras voittoprosentti", data, "percentage", "wins");
 	}
 
 	renderWinsPerPlayer()
