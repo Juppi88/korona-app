@@ -6,8 +6,10 @@ import StatsScreen from './stats-screen.js';
 import PlayerStatsScreen from './player-screen.js';
 import ResultScreen from './result-screen.js';
 import LogScreen from './log-screen.js';
+import LiveStream from './live-stream.js';
 import PieChart from '@material-ui/icons/PieChart';
 import Person from '@material-ui/icons/Person';
+import Videocam from '@material-ui/icons/Videocam';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import KeyboardBackspace from '@material-ui/icons/KeyboardBackspace';
 import './index.css';
@@ -22,6 +24,7 @@ const VIEW_DEFAULT = 0; // Default screen, no stats
 const VIEW_STATS = 1; // Generic game stats (top players, wins etc.)
 const VIEW_LOGS = 2; // Game log (10 most recent games)
 const VIEW_PLAYER = 3; // Per-player stats
+const VIEW_STREAM = 4; // Game live stream
 
 const COLOUR_NONE = -1;
 const COLOUR_RED = 0;
@@ -311,6 +314,7 @@ class Game extends React.Component
 			return (
 				<div className="game-container">
 					<PlayerList players={players} gameStarted={this.state.gameStarted} onFinished={ this.onGameFinished.bind(this) }/>
+
 					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
 					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
 					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
@@ -344,16 +348,33 @@ class Game extends React.Component
 
 	renderReadOnlyMode()
 	{
-		if (this.state.view === VIEW_LOGS)
+		if (this.state.view === VIEW_STATS)
+		{
+			// Render the stats screen
+			return (
+				<div className="game-container">
+
+					<StatsScreen/>
+
+					<Videocam onClick={() => this.setState({view: VIEW_STREAM})} className="stats-icon first"/>
+					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
+					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+
+				</div>
+			);
+		}
+		else if (this.state.view === VIEW_LOGS)
 		{
 			// Render the log screen.
 			return (
 				<div className="game-container">
+
 					<LogScreen/>
 
-					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
-					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
+					<Videocam onClick={() => this.setState({view: VIEW_STREAM})} className="stats-icon first"/>
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon second"/>
 					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+
 				</div>
 			);
 		}
@@ -362,24 +383,26 @@ class Game extends React.Component
 			// Render the per-player stats screen.
 			return (
 				<div className="game-container">
+
 					<PlayerStatsScreen/>
 
-					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
-					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
-					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+					<Videocam onClick={() => this.setState({view: VIEW_STREAM})} className="stats-icon first"/>
+					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon second"/>
+					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon third"/>
 				</div>
 			);
 		}
 		else 
 		{
-			// Render the stats screen
 			return (
 				<div className="game-container">
-					<StatsScreen/>
+
+					<LiveStream/>
 
 					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
 					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
 					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+
 				</div>
 			);
 		}
@@ -389,7 +412,7 @@ class Game extends React.Component
 	{
 		var isLocalHost = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 		
-		if (isLocalHost) {
+		if (!isLocalHost) {
 
 			// Render the full-featured page on the Raspberry Pi (stats and game input).
 			return (
