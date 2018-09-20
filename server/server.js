@@ -61,18 +61,9 @@ app.get("/api/logs", (req, res) => {
 
 // --------------------------------------------------------------------------------
 
-/*var liveGameInfo = {
+var liveGameInfo = {
 	isLive: false,
 	players: []
-};*/
-
-var liveGameInfo = {
-	isLive: true,
-	players: [
-		{ name: "Tuomo", isStarter: true, colour: 1 },
-		{ name: "Tommi", isStarter: false, colour: 2 },
-		{ name: "Tommy", isStarter: false, colour: 3 }
-	]
 };
 
 // Get info of the currently running game.
