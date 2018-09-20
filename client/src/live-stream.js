@@ -1,5 +1,4 @@
 import React from 'react';
-import shaka from 'shaka-player';
 
 // --------------------------------------------------------------------------------
 
@@ -12,11 +11,11 @@ const Colours = [
 
 // --------------------------------------------------------------------------------
 
-const StreamSource = "http://192.168.99.10:8090/camera.webm";
+const StreamSource = "http://192.168.99.10/stream";
 
 class LiveStream extends React.Component
 {
-	componentDidMount()
+	/*componentDidMount()
 	{
 		shaka.polyfill.installAll();
 
@@ -52,18 +51,19 @@ class LiveStream extends React.Component
 
 	componentWillUnmount()
 	{
-	}
+	}*/
 
 	render()
 	{
 		return (
 			<div className="stream-container">
-				<h1>Live Stream: WORK IN PROGRESS</h1>
+				<h1>Live Stream</h1>
 				
 				<video
-					ref="video"
-					width="640"
-					controls autoPlay>
+					src={StreamSource}
+					crossOrigin="anonymous"
+					controls
+					autoPlay>
 				</video>
 			</div>
 		);

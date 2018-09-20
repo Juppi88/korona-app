@@ -416,7 +416,7 @@ class Game extends React.Component
 
 			// Render the full-featured page on the Raspberry Pi (stats and game input).
 			return (
-				<div>
+				<div className="container">
 					{this.renderFullMode()}
 				</div>
 			);
@@ -425,7 +425,7 @@ class Game extends React.Component
 
 			// Guest is visiting the page from elsewhere in the network, show a read-only version of the page with stats only.
 			return (
-				<div>
+				<div className="container">
 					{this.renderReadOnlyMode()}
 				</div>
 			);
