@@ -4,14 +4,16 @@ import React from 'react';
 
 const Colours = [
 	"#F00", // Red
-	"#FF0", // Yellow
-	"#0F0", // Green
+	"#BB0", // Yellow
+	"#0C0", // Green
 	"#00F", // Blue
 ];
 
 // --------------------------------------------------------------------------------
 
 const StreamSource = "http://192.168.99.10/stream";
+
+var dataTimer = 0; // Timeout ID for fetching game data regularly
 
 class LiveStream extends React.Component
 {
@@ -24,7 +26,18 @@ class LiveStream extends React.Component
 			players: []
 		};
 
+		// Start data fetch timer.
 		this.fetchGameInfo();
+	}
+
+	componentWillUnmount()
+	{
+		// Stop regular data updates.
+		if (dataTimer > 0) {
+
+			clearTimeout(dataTimer);
+			dataTimer = 0;
+		}
 	}
 
 	fetchGameInfo()
@@ -33,12 +46,23 @@ class LiveStream extends React.Component
 
 		// Get info about the currently running game.
 		fetch('/api/live')
+
 			.then(function(response) {
 				return response.json();
 			})
+
 			.then(function(json) {
-				instance.setState({ isLive: json.isLive, players: json.players })
+
+				// Run update again in a moment.
+				dataTimer = setTimeout(() => instance.fetchGameInfo(), 5000);
+
+				// Update game info and refresh the page.
+				instance.setState({
+					isLive: json.isLive,
+					players: json.players
+				});
 			})
+
 			.catch(function(ex) {
 			}
 		);
