@@ -347,8 +347,19 @@ select, optgroup {
 	color: black;
 }
 
-video {
+.video-container {
 	margin-top: 2rem;
+	height: calc(85% - 5rem);
+}
+
+video {
+	width: auto;
+	height: 100%;
+	text-align: center;
 	border: 1px solid black;
-	height: calc(80% - 5rem);
+}
+
+.stream-players {
+	margin-top: 1rem;
+	font-size: 1.3rem;
 }

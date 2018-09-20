@@ -72,17 +72,39 @@ class LiveStream extends React.Component
 	{
 		if (this.state.isLive) {
 
+			const players = this.state.players;
+			var playerList = [];
+
+			for (var i = 0, c = players.length; i < c; i++) {
+
+				const player = players[i];
+
+				playerList.push((
+					<span key={i}>
+						<span>{i > 0 ? ", " : ""}</span>
+						<span style={{color: Colours[player.colour], fontStyle: player.isStarter ? "italic" : "normal"}}>
+							{player.name}
+						</span>
+					</span>
+				));
+			}
+
 			// A game is currently running, show the live stream.
 			return (
 				<div className="stream-container">
-					<h1>Live Stream</h1>
+					<h1>KoronaLive</h1>
 					
-					<video
-						src={StreamSource}
-						crossOrigin="anonymous"
-						controls
-						autoPlay>
-					</video>
+					<div className="video-container">
+						<video
+							src={StreamSource}
+							crossOrigin="anonymous"
+							controls
+							autoPlay>
+						</video>
+					</div>
+					<div className="stream-players">
+						Pelaajat: {playerList}
+					</div>
 				</div>
 			);
 
