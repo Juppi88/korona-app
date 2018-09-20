@@ -7,6 +7,8 @@ const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 
+// --------------------------------------------------------------------------------
+
 app.get("/api/names", (req, res) => {
 
 	var names = stats.getNames();
@@ -23,6 +25,8 @@ app.put("/api/names", (req, res) => {
 	res.send({ names: names });
 });
 
+// --------------------------------------------------------------------------------
+
 app.put("/api/game", (req, res) => {
 
 	var gameIndex = 0;
@@ -37,17 +41,67 @@ app.put("/api/game", (req, res) => {
 	res.send({ results: results });
 });
 
+// --------------------------------------------------------------------------------
+
 app.get("/api/stats", (req, res) => {
 
 	var gameStats = stats.getStats();
 	res.send(gameStats);
 });
 
+// --------------------------------------------------------------------------------
+
 app.get("/api/logs", (req, res) => {
 
 	var gameLogs = stats.getLogs();
 	res.send(gameLogs);
 });
+
+// --------------------------------------------------------------------------------
+
+var liveGameInfo = {
+	isLive: false,
+	players: []
+};
+
+// Get info of the currently running game.
+app.get("/api/live", (req, res) => {
+
+	res.send(liveGameInfo);
+});
+
+// Save game info. This means a new game has started.
+app.put("/api/live", (req, res) => {
+
+	if (!req.body.players || req.body.players.length == 0) {
+		return;
+	}
+	
+	// Save game info.
+	liveGameInfo.isLive = true;
+	liveGameInfo.players = req.body.players;
+
+	// TODO: Start the live stream here.
+
+	// Return the game info.
+	res.send(liveGameInfo);
+});
+
+
+// Delete game info. This means the game has ended.
+app.delete("/api/live", (req, res) => {
+
+	// Save game info.
+	liveGameInfo.isLive = false;
+	liveGameInfo.players = [];
+
+	// TODO: Stop the live stream here.
+
+	// Return the game info.
+	res.send(liveGameInfo);
+});
+
+// --------------------------------------------------------------------------------
 
 // Create an SQLite database for stats and other information.
 stats.setupDatabase();

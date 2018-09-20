@@ -177,6 +177,23 @@ class Game extends React.Component
 		// Save the list of players in the game and time for the game start.
 		var timestamp = Math.floor(new Date() / 1000);
 
+		// Send game information to the live stream system.
+		var liveGame = {
+			players: players,
+			gameStarted: timestamp
+		};
+
+		fetch('/api/live', {
+				method: "PUT",
+				body: JSON.stringify(liveGame),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			}
+		);
+
+		// Update the page.
 		this.setState({
 			state: STATE_GAME,
 			players: players,
@@ -202,6 +219,17 @@ class Game extends React.Component
 				winners.push(players[i].colour);
 			}
 		}
+
+		// Inform the live stream system that the game has ended.
+		fetch('/api/live', {
+				method: "DELETE",
+				body: JSON.stringify({}),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			}
+		);
 
 		// Save game info into the log when the winners have been selected.
 		if (winners.length > 0) {
@@ -412,7 +440,7 @@ class Game extends React.Component
 	{
 		var isLocalHost = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 		
-		if (!isLocalHost) {
+		if (isLocalHost) {
 
 			// Render the full-featured page on the Raspberry Pi (stats and game input).
 			return (

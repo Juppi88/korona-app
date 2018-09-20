@@ -15,58 +15,62 @@ const StreamSource = "http://192.168.99.10/stream";
 
 class LiveStream extends React.Component
 {
-	/*componentDidMount()
+	constructor(props)
 	{
-		shaka.polyfill.installAll();
+		super(props);
 
-		if (shaka.Player.isBrowserSupported()) {
-			this.initPlayer();
-		} else {
-			console.error('Browser not supported!');
-		}
+		this.state = {
+			isLive: false,
+			players: []
+		};
 	}
 
-	initPlayer()
+	fetchGameInfo()
 	{
-		var player = new shaka.Player(this.refs.video);
+		var instance = this;
 
-		player.addEventListener('error', this.onErrorEvent);
-
-		player.load(StreamSource)
-			.then(function() {
-				console.log('The video has now been loaded!');
+		// Get info about the currently running game.
+		fetch('/api/live')
+			.then(function(response) {
+				return response.json();
 			})
-			.catch(this.onError);
+			.then(function(json) {
+				instance.setState({ isLive: json.isLive, players: json.players })
+			})
+			.catch(function(ex) {
+			}
+		);
 	}
-	
-	onErrorEvent(event)
-	{
-		this.onError(event.detail);
-	}
-	
-	onError(error)
-	{
-		console.error('Error code', error.code, 'object', error);
-	}
-
-	componentWillUnmount()
-	{
-	}*/
 
 	render()
 	{
-		return (
-			<div className="stream-container">
-				<h1>Live Stream</h1>
-				
-				<video
-					src={StreamSource}
-					crossOrigin="anonymous"
-					controls
-					autoPlay>
-				</video>
-			</div>
-		);
+		if (this.state.isLive) {
+
+			// A game is currently running, show the live stream.
+			return (
+				<div className="stream-container">
+					<h1>Live Stream</h1>
+					
+					<video
+						src={StreamSource}
+						crossOrigin="anonymous"
+						controls
+						autoPlay>
+					</video>
+				</div>
+			);
+
+		}
+		else {
+
+			// No one is currently playing.
+			return (
+				<div className="stream-container">
+					<h1>Peli on päättynyt</h1>
+				</div>
+			);
+
+		}
 	}
 }
 
