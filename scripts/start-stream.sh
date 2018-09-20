@@ -12,4 +12,4 @@ then
 fi
 
 # Start recording.
-ffmpeg -i /dev/video0 http://localhost:8090/camera.ffm & > /dev/null
+ffmpeg -loglevel panic -i /dev/video0 http://localhost:8090/camera.ffm & > /dev/null

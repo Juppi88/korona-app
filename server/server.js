@@ -78,14 +78,14 @@ app.put("/api/live", (req, res) => {
 	if (!req.body.players || req.body.players.length == 0) {
 		return;
 	}
-	
+
 	// Save game info.
 	liveGameInfo.isLive = true;
 	liveGameInfo.players = req.body.players;
 
 	// Start the live stream if running on the Raspberry Pi.
 	if (os.platform() == "linux") {
-		shell.exec('./scripts/start-stream.sh');
+		shell.exec('./scripts/start-stream.sh', { silent: true, async: true });
 	}
 
 	// Return the game info.
@@ -102,7 +102,7 @@ app.delete("/api/live", (req, res) => {
 
 	// End the live stream if running on the Raspberry Pi.
 	if (os.platform() == "linux") {
-		shell.exec('./scripts/stop-stream.sh');
+		shell.exec('./scripts/stop-stream.sh', { silent: true, async: true });
 	}
 
 	// Return the game info.

@@ -23,6 +23,8 @@ class LiveStream extends React.Component
 			isLive: false,
 			players: []
 		};
+
+		this.fetchGameInfo();
 	}
 
 	fetchGameInfo()
