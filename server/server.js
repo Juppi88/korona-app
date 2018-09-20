@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const shell = require('shelljs');
+const os = require('os');
 const stats = require("./stats");
 
 const app = express();
@@ -81,7 +83,10 @@ app.put("/api/live", (req, res) => {
 	liveGameInfo.isLive = true;
 	liveGameInfo.players = req.body.players;
 
-	// TODO: Start the live stream here.
+	// Start the live stream if running on the Raspberry Pi.
+	if (os.platform() == "linux") {
+		shell.exec('./scripts/start-stream.sh');
+	}
 
 	// Return the game info.
 	res.send(liveGameInfo);
@@ -95,7 +100,10 @@ app.delete("/api/live", (req, res) => {
 	liveGameInfo.isLive = false;
 	liveGameInfo.players = [];
 
-	// TODO: Stop the live stream here.
+	// End the live stream if running on the Raspberry Pi.
+	if (os.platform() == "linux") {
+		shell.exec('./scripts/stop-stream.sh');
+	}
 
 	// Return the game info.
 	res.send(liveGameInfo);
