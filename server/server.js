@@ -7,6 +7,12 @@ const stats = require("./stats");
 const app = express();
 const port = process.env.PORT || 5000;
 
+const COLOUR_NONE = -1;
+const COLOUR_RED = 0;
+const COLOUR_YELLOW = 1;
+const COLOUR_GREEN = 2;
+const COLOUR_BLUE = 3;
+
 app.use(bodyParser.json());
 
 // --------------------------------------------------------------------------------
@@ -85,7 +91,18 @@ app.put("/api/live", (req, res) => {
 
 	// Start the live stream if running on the Raspberry Pi.
 	if (os.platform() == "linux") {
-		shell.exec('./scripts/start-stream.sh', { silent: true, async: true });
+		var plrRed = "", plrYellow = "", plrGreen = "", plrBlue = "";
+
+		for (var i = 0, c = req.body.players.length; i < c; i++) {
+			const player = req.body.players[i];
+
+			if (player.colour === COLOUR_RED) plrRed = player.name;
+			else if (player.colour === COLOUR_YELLOW) plrYellow = player.name;
+			else if (player.colour === COLOUR_GREEN) plrGreen = player.name;
+			else if (player.colour === COLOUR_BLUE) plrBlue = player.name;
+		}
+
+		shell.exec('./scripts/start-stream.sh "' + plrRed + '" "' + plrYellow + '" "' + plrGreen + '" "' + plrBlue + '"', { silent: true, async: true });
 	}
 
 	// Return the game info.
