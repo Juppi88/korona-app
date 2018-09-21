@@ -9,7 +9,7 @@ buffer_file="/run/user/1000/camera.ffm"
 
 font="/usr/share/fonts/truetype/piboto/PibotoCondensed-Regular.ttf"
 font_italic="/usr/share/fonts/truetype/piboto/PibotoCondensed-Italic.ttf"
-font_size=20
+font_size=25
 box_border=3
 
 
@@ -17,14 +17,14 @@ box_border=3
 rm -f $buffer_file
 
 # Start the video server if it's not running.
-if ! pgrep -x "ffserver" > /dev/null
-then
-    ffserver & > /dev/null
-fi
+#if ! pgrep -x "ffserver" > /dev/null
+#then
+#    ffserver & > /dev/null
+#fi
 
 ####################################################################################################
 
-font_params="fontfile=$font: fontsize=$font_size: box=1: boxcolor=black@0.5: boxborderw=$box_border"
+font_params="fontfile=$font: fontsize=$font_size: box=1: boxcolor=white@0.7: boxborderw=$box_border"
 params=""
 has_players=0
 
@@ -67,6 +67,6 @@ fi
 ####################################################################################################
 
 # Start recording.
-ffmpeg -i /dev/video0 -vf "[in] \
+ffmpeg -thread_queue_size 1024 -i /dev/video0 -f lavfi -i anullsrc=channel_layout=mono:sample_rate=44100 -acodec aac -b:a 128k -vf "[in] \
 	$params \
-	[out]" -an -s 640x480 -c:v h264_omx /run/user/1000/testih264.mp4
+	[out]" -s 640x360 -r 30 -threads 4 -c:v h264_omx -b:v 750k -bufsize 1500k -g 60 -f flv rtmp://a.rtmp.youtube.com/live2/bmga-agch-38hy-6zsf
