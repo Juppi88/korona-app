@@ -26,3 +26,4 @@ yarn-error.log*
 *.db-journal
 
 *.mp4
+scripts/start-stream.sh

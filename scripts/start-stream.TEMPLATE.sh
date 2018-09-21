@@ -6,6 +6,7 @@ player_green="$3"
 player_blue="$4"
 
 buffer_file="/run/user/1000/camera.ffm"
+stream_location="rtmp://host.name"
 
 font="/usr/share/fonts/truetype/piboto/PibotoCondensed-Regular.ttf"
 font_italic="/usr/share/fonts/truetype/piboto/PibotoCondensed-Italic.ttf"
@@ -34,7 +35,7 @@ then
 	[ $has_players == 1 ] && params="$params," || params=$params
 
 	# Append the text parameters to the parameter list.
-	params="$params drawtext='text=$player_red: fontcolor=red: x=(w-text_w)/2: y=(text_h)/2: $font_params'"
+	params="$params drawtext='text=$player_red: fontcolor=red: x=(w-text_w)/2: y=(h-text_h)-5: $font_params'"
 
 	# We've now processed at least one player.
 	has_players=1
@@ -44,7 +45,7 @@ fi
 if [ ! -z "$player_yellow" ]
 then
 	[ $has_players == 1 ] && params="$params," || params=$params
-	params="$params drawtext='text=$player_yellow: fontcolor=yellow: x=5: y=(h-text_h)/2: $font_params'"
+	params="$params drawtext='text=$player_yellow: fontcolor=yellow: x=(w-text_w)-5: y=(h-text_h)/2: $font_params'"
 	has_players=1
 fi
 
@@ -52,7 +53,7 @@ fi
 if [ ! -z "$player_green" ]
 then
 	[ $has_players == 1 ] && params="$params," || params=$params
-	params="$params drawtext='text=$player_green: fontcolor=green: x=(w-text_w)/2: y=(h-text_h)-5: $font_params'"
+	params="$params drawtext='text=$player_green: fontcolor=green: x=(w-text_w)/2: y=(text_h)/2: $font_params'"
 	has_players=1
 fi
 
@@ -60,7 +61,7 @@ fi
 if [ ! -z "$player_blue" ]
 then
 	[ $has_players == 1 ] && params="$params," || params=$params
-	params="$params drawtext='text=$player_blue: fontcolor=blue: x=(w-text_w)-5: y=(h-text_h)/2: $font_params'"
+	params="$params drawtext='text=$player_blue: fontcolor=blue: x=5: y=(h-text_h)/2: $font_params'"
 	has_players=1
 fi
 
@@ -69,4 +70,4 @@ fi
 # Start recording.
 ffmpeg -thread_queue_size 1024 -i /dev/video0 -f lavfi -i anullsrc=channel_layout=mono:sample_rate=44100 -acodec aac -b:a 128k -vf "[in] \
 	$params \
-	[out]" -s 640x360 -r 30 -threads 4 -c:v h264_omx -b:v 750k -bufsize 1500k -g 60 -f flv rtmp://a.rtmp.youtube.com/live2/bmga-agch-38hy-6zsf
+	[out]" -s 640x360 -r 30 -threads 4 -c:v h264_omx -b:v 750k -bufsize 1500k -g 60 -f flv $stream_location
