@@ -11,7 +11,8 @@ const Colours = [
 
 // --------------------------------------------------------------------------------
 
-const StreamSource = "http://192.168.99.10/stream";
+//const StreamSource = "http://192.168.99.10/stream";
+const StreamSource = "http://192.168.99.10/testvideo";
 
 var dataTimer = 0; // Timeout ID for fetching game data regularly
 
@@ -20,7 +21,31 @@ class LiveStream extends React.Component
 	constructor(props)
 	{
 		super(props);
+		
+		/*
+		// Start rendering the video when the page has loaded.
+		var instance = this;
 
+		document.addEventListener('DOMContentLoaded', function()
+		{
+			var video = document.getElementById('stream-video');
+			var canvas = document.getElementById('stream-canvas');
+			var context = canvas.getContext('2d');
+
+			var canvasWidth = Math.floor(canvas.clientWidth);
+			var canvasHeight = Math.floor(canvas.clientHeight);
+			canvas.width = canvasWidth;
+			canvas.height = canvasHeight;
+
+			video.addEventListener('play', function() {
+				console.log("Play");
+				instance.drawVideo(this, context, canvasWidth, canvasHeight);
+			}, false);
+
+		}, false);
+		*/
+
+		// Create a state for the stream page.
 		this.state = {
 			isLive: false,
 			players: []
@@ -28,6 +53,24 @@ class LiveStream extends React.Component
 
 		// Start data fetch timer.
 		this.fetchGameInfo();
+	}
+
+	drawVideo(video, context, width, height)
+	{
+		if (video.paused || video.ended) {
+
+			// Stop processing when the stream has ended.
+			return false;
+		}
+
+		// Draw the video to the background.
+		context.drawImage(video, 0, 0, width, height);
+
+		//context.fillColor = "#F00";
+		//context.fillText("Big smile!", 10, 90);
+
+		// Re-draw regularly.
+		setTimeout(() => this.drawVideo(video, context, width, height), 20);
 	}
 
 	componentWillUnmount()
@@ -68,6 +111,8 @@ class LiveStream extends React.Component
 		);
 	}
 
+
+
 	render()
 	{
 		if (this.state.isLive) {
@@ -90,12 +135,14 @@ class LiveStream extends React.Component
 			}
 
 			// A game is currently running, show the live stream.
+			// <canvas className="stream-canvas" id="stream-canvas"></canvas>
+
 			return (
 				<div className="stream-container">
 					<h1>KoronaLive</h1>
 					
 					<div className="video-container">
-						<video
+						<video id="stream-video"
 							src={StreamSource}
 							crossOrigin="anonymous"
 							controls
