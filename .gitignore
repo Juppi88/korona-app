@@ -27,3 +27,4 @@ yarn-error.log*
 
 *.mp4
 scripts/start-stream.sh
+auth.json

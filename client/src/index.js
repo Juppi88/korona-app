@@ -66,7 +66,9 @@ class Game extends React.Component
 			players: null,
 			gameStarted: 0,
 			view: VIEW_DEFAULT,
-			results: []
+			results: [],
+			previousGame: 0,
+			previousPlayers: []
 		};
 	}
 
@@ -153,12 +155,56 @@ class Game extends React.Component
 
 	randomizePlayers(names)
 	{
+		const previous = this.state.previousPlayers;
+		var winners = [], others = [];
+		var i, c;
+		
+		// Filter players who played in the previous game.
+		for (i = 0; i < previous.length; i++) {
+			
+			const player = previous[i];
+			if (player.isWinner) {
+				winners.push(player.name);
+			}
+			else {
+				others.push(player.name);
+			}
+		}
+
 		// Randomize the order of the players.
 		this.shuffleArray(names);
 
-		// Remove excessive players.
-		names = names.slice(0, 4);
+		var selected = [];
 		
+		// Prefer players who weren't in the last game.
+		for (i = 0, c = names.length; i < c; i++) {
+
+			if (winners.indexOf(names[i]) < 0 &&
+				others.indexOf(names[i]) < 0) {
+
+				selected.push(names[i]);
+			}
+		}
+
+		// Then select players who won in the previous game.
+		for (i = 0, c = names.length; i < c; i++) {
+
+			if (winners.indexOf(names[i]) >= 0) {
+				selected.push(names[i]);
+			}
+		}
+
+		// Finally add players who were in the last game but didn't win.
+		for (i = 0, c = names.length; i < c; i++) {
+
+			if (others.indexOf(names[i]) >= 0) {
+				selected.push(names[i]);
+			}
+		}
+
+		// Remove excessive players.
+		names = selected.slice(0, 4);
+
 		return names;
 	}
 
@@ -254,8 +300,15 @@ class Game extends React.Component
 		if (winners.length > 0) {
 
 			this.saveGameResultsToLog(players, winners);
+
+			// Save a list of players and winners, which can be used to randomize
+			// the players of the next game when more than 4 players want to play.
+			var timestamp = Math.floor(new Date() / 1000);
+
 			this.setState({
-				players: []
+				players: [],
+				previousGame: timestamp,
+				previousPlayers: players,
 			});
 		}
 		else {
