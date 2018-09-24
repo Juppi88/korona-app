@@ -104,10 +104,10 @@ class PlayerSelector extends React.Component
 		const players = this.state.players;
 
 		// Make sure there are 4 players at most.
-		if (players.length >= 4) {
-			alert("Pelaajia voi olla korkeintaan neljä.");
-			return;
-		}
+		//if (players.length >= 4) {
+		//	alert("Pelaajia voi olla korkeintaan neljä.");
+		//	return;
+		//}
 
 		// Add the player to the list.
 		players.push(name);

@@ -151,8 +151,24 @@ class Game extends React.Component
 		);
 	}
 
+	randomizePlayers(names)
+	{
+		// Randomize the order of the players.
+		this.shuffleArray(names);
+
+		// Remove excessive players.
+		names = names.slice(0, 4);
+		
+		return names;
+	}
+
 	onGameStarted(names)
 	{
+		// Randomize which players are playing if more than 4 are selected.
+		if (names.length > 4) {
+			names = this.randomizePlayers(names);
+		}
+
 		// Fill in and store player info.
 		const players = Array(names.length);
 
