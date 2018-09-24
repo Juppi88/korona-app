@@ -169,10 +169,13 @@ class Game extends React.Component
 		// Randomize colours for each player.
 		this.randomizeColours(players);
 
+		// Always randomize the starter of the game.
+		this.randomizeStarter(players);
+
 		// Ask the user whether the first player of the game should be randomized.
-		if (window.confirm("Arvotaanko pelin aloittaja?")) {
-			this.randomizeStarter(players);
-		}
+		//if (window.confirm("Arvotaanko pelin aloittaja?")) {
+		//	this.randomizeStarter(players);
+		//}
 
 		// Save the list of players in the game and time for the game start.
 		var timestamp = Math.floor(new Date() / 1000);
