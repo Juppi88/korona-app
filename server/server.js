@@ -143,7 +143,7 @@ app.delete("/api/live", (req, res) => {
 
 function onStreamStart()
 {
-	if (!liveGameInfo.isLive) {
+	if (!liveGameInfo.isLive || liveGameInfo.isStreaming) {
 		return;
 	}
 
