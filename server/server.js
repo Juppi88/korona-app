@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const shell = require('shelljs');
 const os = require('os');
 const stats = require("./stats");
+const stream = require("./stream");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -44,6 +45,11 @@ app.put("/api/game", (req, res) => {
 		req.body.hasOwnProperty("starter")) {
 
 		results = stats.saveGameToLog(req.body);
+
+		// If a stream was running, publish results in the chat.
+		if (liveGameInfo.isStreaming) {
+			onStreamEnd(results);
+		}
 	}
 
 	res.send({ results: results });
@@ -69,8 +75,13 @@ app.get("/api/logs", (req, res) => {
 
 var liveGameInfo = {
 	isLive: false,
+	isStreaming: false,
 	players: []
 };
+
+var streamChannel = null;
+var streamChatId = null;
+var streamTitle = null;
 
 // Get info of the currently running game.
 app.get("/api/live", (req, res) => {
@@ -87,6 +98,7 @@ app.put("/api/live", (req, res) => {
 
 	// Save game info.
 	liveGameInfo.isLive = true;
+	liveGameInfo.isStreaming = false;
 	liveGameInfo.players = req.body.players;
 
 	// Start the live stream if running on the Raspberry Pi.
@@ -104,6 +116,9 @@ app.put("/api/live", (req, res) => {
 
 		shell.exec('./scripts/start-stream.sh "' + plrRed + '" "' + plrYellow + '" "' + plrGreen + '" "' + plrBlue + '"', { silent: true, async: true });
 	}
+
+	// Fetch the live stream info from Google APIs.
+	setTimeout(refreshStreamInfo, 5000);
 
 	// Return the game info.
 	res.send(liveGameInfo);
@@ -125,6 +140,112 @@ app.delete("/api/live", (req, res) => {
 	// Return the game info.
 	res.send(liveGameInfo);
 });
+
+function onStreamStart()
+{
+	if (!liveGameInfo.isLive) {
+		return;
+	}
+
+	liveGameInfo.isStreaming = true;
+
+	console.log("Stream info received.");
+	console.log("Title: " + stream.getStreamTitle());
+	console.log("Link: " + stream.getStreamUrl());
+
+	const players = liveGameInfo.players;
+	var names = [];
+	var starter = "";
+
+	// List the players of the game and the first player.
+	for (var i = 0, c = players.length; i < c; i++) {
+
+		names.push(players[i].name);
+
+		if (players[i].isStarter) {
+			starter = players[i].name;
+		}
+	}
+
+	// Sort player names alphabetically.
+	names.sort();
+
+	// Compose a message listing all the players in the game.
+	var gameInfoMessage = "Pelaamassa ovat ";
+	var starterMessage = "Pelin aloittaa " + starter + ".";
+
+	for (var i = 0, c = names.length; i < c; i++) {
+
+		if (i > 0) {
+			if (i == c - 1) gameInfoMessage += " ja ";
+			else gameInfoMessage += ", ";
+		}
+
+		gameInfoMessage += names[i];
+	}
+
+	gameInfoMessage += ".";
+
+	// Send the messages to the YouTube channel.
+	stream.sendChatMessage("Tervetuloa " + stream.getStreamTitle() + " -lähetykseen!");
+
+	// YouTube chat doesn't guarantee the order of the messages, hence the timeouts.
+	setTimeout(() => stream.sendChatMessage(gameInfoMessage), 1000);
+	setTimeout(() => stream.sendChatMessage(starterMessage), 2000);
+}
+
+function onStreamEnd(players)
+{
+	var winners = [];
+
+	// Get all the winners.
+	for (var i = 0, c = players.length; i < c; i++) {
+
+		if (players[i].isWinner) {
+			winners.push(players[i].name);
+		}
+	}
+
+	// Compose a message listing all the players in the game.
+	var winnerMessage = null;
+
+	if (winners.length == 1) {
+		winnerMessage = "Pelin voittaa ";
+	}
+	else {
+		winnerMessage = "Pelin voiton jakavat ";
+	}
+	
+	for (var i = 0, c = winners.length; i < c; i++) {
+
+		if (i > 0) {
+			if (i == c - 1) winnerMessage += " ja ";
+			else winnerMessage += ", ";
+		}
+
+		winnerMessage += winners[i];
+	}
+
+	winnerMessage += "!";
+
+	// Send the message to the YouTube channel.
+	stream.sendChatMessage(winnerMessage);
+}
+
+function refreshStreamInfo()
+{
+	if (liveGameInfo.isLive &&
+		!liveGameInfo.isStreaming) {
+
+		console.log("Attempting to fetch stream info from Youtube...");
+
+		// Query the Google API server.
+		stream.fetchStreamInfo(onStreamStart);
+
+		// Re-attempt to fetch stream info in 5 seconds.
+		setTimeout(refreshStreamInfo, 5000);
+	}
+}
 
 // --------------------------------------------------------------------------------
 
