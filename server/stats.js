@@ -66,7 +66,7 @@ module.exports.setupDatabase = function()
 	}
 
 	// Retrieve and store the biggest index in the game log.
-	db.get("SELECT MAX(id) FROM game_log;", [], (err, row) => {
+	db.get("SELECT MAX(id) FROM game_log ORDER BY time_started ASC;", [], (err, row) => {
 		if (row) {
 			previousLogIndex = getAtIndex(row, 0);
 		}
@@ -482,7 +482,7 @@ function cacheLogs()
 
 	logs = [];
 
-	db.all(`SELECT * FROM game_log ORDER BY id DESC LIMIT 10;`, [],
+	db.all(`SELECT * FROM game_log ORDER BY time_started DESC LIMIT 10;`, [],
 
 			(err, rows) => {
 
@@ -630,7 +630,7 @@ function recordGames()
 		return names;
 	}
 
-	db.all(`SELECT * FROM game_log ORDER BY id ASC;`, [],
+	db.all(`SELECT * FROM game_log ORDER BY time_started ASC;`, [],
 
 		(err, rows) => {
 

@@ -178,7 +178,6 @@ class PlayerStatsScreen extends React.Component
 
 				<div className="player-stat-list">
 					<div className="list-left">
-						<div>Pelejä: <span>{player.totalGames}</span></div>
 						<div>Voittoja: <span>{player.wins} ({(100 * player.wins / player.totalGames).toFixed(0)}%)</span></div>
 					</div>
 					<div className="list-right">
