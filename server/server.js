@@ -2,8 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const shell = require('shelljs');
 const os = require('os');
+const nodemailer = require('nodemailer');
 const stats = require("./stats");
 const stream = require("./stream");
+const emailInfo = require("./email.json");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -186,6 +188,9 @@ function onStreamStart()
 
 	gameInfoMessage += ".";
 
+	// Send a stream email to the stream group.
+	sendStreamEmail(stream.getStreamUrl(), gameInfoMessage);
+
 	// Send the messages to the YouTube channel.
 	stream.sendChatMessage("Tervetuloa " + stream.getStreamTitle() + " -lähetykseen!");
 
@@ -245,6 +250,39 @@ function refreshStreamInfo()
 		// Re-attempt to fetch stream info in 5 seconds.
 		setTimeout(refreshStreamInfo, 5000);
 	}
+}
+
+function sendStreamEmail(streamLink, streamMessage)
+{
+	var transporter = nodemailer.createTransport({
+		service: 'gmail',
+		auth: {
+			user: emailInfo.sender,
+			pass: emailInfo.password
+		}
+	});
+
+	var message = 'Tervetuloa seuraamaan KoronaNet Live-streamia YouTubessa: ' + streamLink;
+	message += "\n\n";
+	message += streamMessage;
+
+	var d = new Date();
+
+	// Compose the email.
+	var mailOptions = {
+		from: emailInfo.sender,
+		to: emailInfo.receiver,
+		subject: `${stream.getStreamTitle()} ${d.getDate()}.${d.getMonth() + 1}.${1900 + d.getYear()} @ ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`,
+		text: message
+	};
+
+	// Send it.
+	transporter.sendMail(mailOptions, function(error, info) {
+		if (error) {
+			console.error("Could not send email:");
+			console.error(error);
+		}
+	});
 }
 
 // --------------------------------------------------------------------------------
