@@ -273,7 +273,7 @@ class Game extends React.Component
 		});
 	}
 
-	onGameFinished(players)
+	onGameFinished(players, highlights)
 	{
 		// Compile a list of winners for the game.
 		var winners = [];
@@ -299,7 +299,7 @@ class Game extends React.Component
 		// Save game info into the log when the winners have been selected.
 		if (winners.length > 0) {
 
-			this.saveGameResultsToLog(players, winners);
+			this.saveGameResultsToLog(players, winners, highlights);
 
 			// Save a list of players and winners, which can be used to randomize
 			// the players of the next game when more than 4 players want to play.
@@ -319,7 +319,7 @@ class Game extends React.Component
 		}
 	}
 
-	saveGameResultsToLog(playerInfo, winners)
+	saveGameResultsToLog(playerInfo, winners, highlights)
 	{
 		var timestamp = Math.floor(new Date() / 1000);
 
@@ -353,7 +353,8 @@ class Game extends React.Component
 					starter: starter,
 					startTime: this.state.gameStarted,
 					endTime: timestamp,
-					winners: winners
+					winners: winners,
+					highlights: highlights
 				}),
 				headers: {
 					'Accept': 'application/json',

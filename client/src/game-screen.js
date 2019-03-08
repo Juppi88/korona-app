@@ -22,6 +22,7 @@ class PlayerList extends React.Component
 		this.state = {
 			players: props.players,
 			gameStarted: props.gameStarted,
+			highlights: []
 		};
 
 		this.updateTime(true);
@@ -62,7 +63,32 @@ class PlayerList extends React.Component
 		}
 
 		// Call the game finished method of the Game class.
-		this.props.onFinished(players);
+		this.props.onFinished(players, this.state.highlights);
+	}
+
+	saveHighlight()
+	{
+		var now = Math.floor(new Date() / 1000);
+		var duration = now - this.state.gameStarted;
+
+		// Move the timestamp back 10 seconds so the actual highlight event is captured on video.
+		if (duration < 10) {
+			duration = 0;
+		}
+		else {
+			duration -= 10;
+		}
+
+		var highlights = this.state.highlights;
+		highlights.push(duration);
+
+		this.setState({ highlights: highlights });
+
+		// Show a notification to the user.
+		var hour = Math.floor(duration / 60);
+		var min = duration - 60 * hour;
+
+		alert("Lisätty hilight kohtaan " + hour.toString() + ":" + min.toString().padStart(2, '0'));
 	}
 
 	updateTime(refreshTimer)
@@ -173,6 +199,7 @@ class PlayerList extends React.Component
 				</div>
 				<div className="bottom-menu">
 					<button onClick={() => this.startNewGame()} className="start-button">{isWinnerMarked ? "Tallenna tulokset" : "Uusi Peli"}</button>
+					<button onClick={() => this.saveHighlight()} className="hilight-button">Hilight!</button>
 				</div>
 				<div id="clock"className="clock">0:00</div>
 			</div>

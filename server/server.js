@@ -46,11 +46,17 @@ app.put("/api/game", (req, res) => {
 	if (req.body.hasOwnProperty("players") &&
 		req.body.hasOwnProperty("starter")) {
 
+		var highlights = [];
+
+		if (req.body.hasOwnProperty("highlights")) {
+			highlights = req.body.highlights;
+		}
+
 		results = stats.saveGameToLog(req.body);
 
 		// If a stream was running, publish results in the chat.
 		if (liveGameInfo.isStreaming) {
-			onStreamEnd(results);
+			onStreamEnd(results, highlights);
 		}
 	}
 
@@ -84,6 +90,7 @@ var liveGameInfo = {
 var streamChannel = null;
 var streamChatId = null;
 var streamTitle = null;
+var streamEmailTopic = null;
 
 // Get info of the currently running game.
 app.get("/api/live", (req, res) => {
@@ -189,7 +196,7 @@ function onStreamStart()
 	gameInfoMessage += ".";
 
 	// Send a stream email to the stream group.
-	sendStreamEmail(stream.getStreamUrl(), gameInfoMessage);
+	streamEmailTopic = sendStreamEmail(stream.getStreamUrl(), gameInfoMessage);
 
 	// Send the messages to the YouTube channel.
 	stream.sendChatMessage("Tervetuloa " + stream.getStreamTitle() + " -lähetykseen!");
@@ -199,7 +206,7 @@ function onStreamStart()
 	setTimeout(() => stream.sendChatMessage(starterMessage), 2000);
 }
 
-function onStreamEnd(players)
+function onStreamEnd(players, highlights)
 {
 	var winners = [];
 
@@ -235,6 +242,12 @@ function onStreamEnd(players)
 
 	// Send the message to the YouTube channel.
 	stream.sendChatMessage(winnerMessage);
+
+	if (streamEmailTopic &&
+		highlights.length > 0) {
+
+		sendHighlightEmail(streamEmailTopic, stream.getStreamUrl(), highlights);
+	}
 }
 
 function refreshStreamInfo()
@@ -267,12 +280,56 @@ function sendStreamEmail(streamLink, streamMessage)
 	message += streamMessage;
 
 	var d = new Date();
+	var topic = `${stream.getStreamTitle()} ${d.getDate()}.${d.getMonth() + 1}.${1900 + d.getYear()} @ ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
 
 	// Compose the email.
 	var mailOptions = {
 		from: emailInfo.sender,
 		to: emailInfo.receiver,
-		subject: `${stream.getStreamTitle()} ${d.getDate()}.${d.getMonth() + 1}.${1900 + d.getYear()} @ ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`,
+		subject: topic,
+		text: message
+	};
+
+	// Send it.
+	transporter.sendMail(mailOptions, function(error, info) {
+		if (error) {
+			console.error("Could not send email:");
+			console.error(error);
+		}
+	});
+
+	return topic;
+}
+
+function sendHighlightEmail(replyToEmail, streamLink, highlights)
+{
+	var transporter = nodemailer.createTransport({
+		service: 'gmail',
+		auth: {
+			user: emailInfo.sender,
+			pass: emailInfo.password
+		}
+	});
+
+	var message = 'Pelin highlightit:';
+	message += "\n\n";
+	
+	for (var i = 0, c = highlights.length; i < c; i++) {
+
+		var t = highlights[i];
+		var h = Math.floor(t / 60);
+		var m = t - 60 * h;
+
+		message += " * " + h.toString() + ":" + m.toString().padStart(2, '0') + ": " + streamLink + "?t=" + t + "\n";
+	}
+
+	var d = new Date();
+
+	// Compose the email.
+	var mailOptions = {
+		from: emailInfo.sender,
+		to: emailInfo.receiver,
+		subject: 'Re: ' + replyToEmail,
 		text: message
 	};
 

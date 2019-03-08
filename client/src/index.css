@@ -59,10 +59,15 @@ button:hover {
 	margin: 0.1rem;
 }
 
-.start-button {
+.start-button,
+.hilight-button {
 	padding: 1.5rem 2rem;
 	margin-top: 3rem;
 	font-size: 1.5rem;
+}
+
+.hilight-button {
+	margin-left: 0.5rem;
 }
 
 .player-list {
@@ -104,7 +109,8 @@ button:hover {
 	margin-bottom: 0.5rem;
 }
 
-.bottom-menu .start-button { /* Controls on the bottom right side of the screen (new game etc.) */
+.bottom-menu .start-button,
+.bottom-menu .hilight-button { /* Controls on the bottom right side of the screen (new game etc.) */
 	margin-top: 1rem;
 }
 
