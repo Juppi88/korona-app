@@ -141,6 +141,14 @@ class PlayerStatsScreen extends React.Component
 			});
 		}
 
+		if (history.length === 1) {
+			history.unshift({
+				date: "",
+				level: history[0].level,
+				xp: history[0].xp
+			});
+		}
+
 		var colours = [
 			{ colour: COLOUR_RED, wins: player.winsRed, games: player.gamesRed },
 			{ colour: COLOUR_YELLOW, wins: player.winsYellow, games: player.gamesYellow },
