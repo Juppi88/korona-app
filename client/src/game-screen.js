@@ -27,6 +27,15 @@ class PlayerList extends React.Component
 		this.updateTime(true);
 	}
 
+	componentWillUnmount()
+	{
+		if (clockTimer > 0) {
+
+			clearTimeout(clockTimer);
+			clockTimer = 0;
+		}
+	}
+
 	startNewGame()
 	{
 		// Ensure the winner(s) have been selected.
