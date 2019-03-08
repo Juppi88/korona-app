@@ -17,6 +17,36 @@ var streamTitle =  null;
 
 // --------------------------------------------------------------------------------
 
+module.exports.backupFile = function(fileName)
+{
+	oauthClient.setCredentials(token);
+
+	const drive = google.drive({
+		auth: oauthClient,
+		version: 'v3'
+	});
+
+	drive.files.list({
+		spaces: 'appDataFolder',
+		pageSize: 10,
+		fields: 'nextPageToken, files(id, name)',
+	},
+	(err, res) => {
+		if (err) {
+			console.log(err);
+			return console.log("drive.files.list error: ");
+		}
+
+		const files = res.data.files;
+
+		console.log("Files:");
+		files.map((file) => {
+			console.log(`${file.name} (${file.id})`);
+		});
+	});
+
+}
+
 module.exports.fetchStreamInfo = function(onStreamInfoReceived)
 {
 	oauthClient.setCredentials(token);

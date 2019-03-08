@@ -294,3 +294,5 @@ stats.setupDatabase();
 stats.getNames();
 
 app.listen(port, () => console.log("API server listening on port " + port));
+
+//stream.backupFile("../stats.db");
