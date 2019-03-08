@@ -71,12 +71,12 @@ class PlayerList extends React.Component
 		var now = Math.floor(new Date() / 1000);
 		var duration = now - this.state.gameStarted;
 
-		// Move the timestamp back 10 seconds so the actual highlight event is captured on video.
-		if (duration < 10) {
+		// Move the timestamp back 15 seconds so the actual highlight event is captured on video.
+		if (duration < 15) {
 			duration = 0;
 		}
 		else {
-			duration -= 10;
+			duration -= 15;
 		}
 
 		var highlights = this.state.highlights;
