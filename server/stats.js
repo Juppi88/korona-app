@@ -209,7 +209,17 @@ module.exports.addName = function(name)
 					xp: 0,
 					xpToNextLevel: expRequiredToLevel(2),
 					history: [],
-					allTimeXp: 0
+					allTimeXp: 0,
+					winsRed: 0,
+					winsYellow: 0,
+					winsGreen: 0,
+					winsBlue: 0,
+					gamesRed: 0,
+					gamesYellow: 0,
+					gamesGreen: 0,
+					gamesBlue: 0,
+					totalGames: 0,
+					wins: 0,
 				});
 			}
 		});
