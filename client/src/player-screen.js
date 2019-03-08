@@ -133,15 +133,19 @@ class PlayerStatsScreen extends React.Component
 		for (var i = 0, c = player.history.length; i < c; i++) {
 
 			var date = new Date(1000 * player.history[i].gameStarted);
+			var xp = 1.0 * player.history[i].xp.toFixed(1);
 
 			history.push({
 				date: date.getDate() + "." + (date.getMonth() + 1) + ".",
 				level: player.history[i].level,
-				xp: 1.0 * player.history[i].xp.toFixed(1)
+				xp: xp
 			});
 		}
 
+		// Add a second fake game for players with just one played game to avoid having a vertical
+		// level and XP bar.
 		if (history.length === 1) {
+
 			history.unshift({
 				date: "",
 				level: history[0].level,
@@ -179,6 +183,17 @@ class PlayerStatsScreen extends React.Component
 			history = history.slice(-10);
 		}
 
+		// Store min and max XP values in history so the graph can be scaled between these.
+		var maxXP = 0, minXP = 10000000;
+
+		for (var idx = 0, cnt = history.length; idx < cnt; idx++) {
+
+			var histXp = history[idx].xp;
+
+			if (histXp > maxXP) maxXP = histXp;
+			if (histXp < minXP) minXP = histXp;
+		}
+
 		return (
 			<div className="player-stats">
 
@@ -198,7 +213,7 @@ class PlayerStatsScreen extends React.Component
 					<CartesianGrid strokeDasharray="3 3"/>
 					<XAxis dataKey="date"/>
 					<YAxis yAxisId="left" allowDecimals={false} domain={[0, 'auto']} />
-					<YAxis yAxisId="right" orientation="right" allowDecimals={false} domain={[0, 'auto']} />
+					<YAxis yAxisId="right" orientation="right" allowDecimals={false} domain={[Math.max(0, Math.floor(minXP) - 1), Math.ceil(maxXP) + 1]} />
 					<Tooltip/>
 					<Legend wrapperStyle={{ bottom: -8 }}/>
 					<Line yAxisId="left" type="linear" dataKey="level" stroke="#8884d8" activeDot={{r: 8}}/>
