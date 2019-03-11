@@ -6,9 +6,12 @@ const nodemailer = require('nodemailer');
 const stats = require("./stats");
 const stream = require("./stream");
 const emailInfo = require("./email.json");
+const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+var changelog = "";
 
 const COLOUR_NONE = -1;
 const COLOUR_RED = 0;
@@ -17,6 +20,12 @@ const COLOUR_GREEN = 2;
 const COLOUR_BLUE = 3;
 
 app.use(bodyParser.json());
+
+// --------------------------------------------------------------------------------
+
+app.get("/api/changelog", (req, res) => {
+	res.send({ changelog: changelog });
+});
 
 // --------------------------------------------------------------------------------
 
@@ -349,6 +358,11 @@ stats.setupDatabase();
 
 // Cache the list of names.
 stats.getNames();
+
+// Cache changelog.
+fs.readFile('./changelog.txt', 'utf8', function(err, data) {
+	changelog = data;
+});
 
 app.listen(port, () => console.log("API server listening on port " + port));
 

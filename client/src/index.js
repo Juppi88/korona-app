@@ -25,6 +25,7 @@ const VIEW_STATS = 1; // Generic game stats (top players, wins etc.)
 const VIEW_LOGS = 2; // Game log (10 most recent games)
 const VIEW_PLAYER = 3; // Per-player stats
 const VIEW_STREAM = 4; // Game live stream
+const VIEW_CHANGELOG = 5; // Display a feature changelog
 
 const COLOUR_NONE = -1;
 const COLOUR_RED = 0;
@@ -68,8 +69,11 @@ class Game extends React.Component
 			view: VIEW_DEFAULT,
 			results: [],
 			previousGame: 0,
-			previousPlayers: []
+			previousPlayers: [],
+			changelog: '',
 		};
+
+		this.fetchChangelog();
 	}
 
 	shuffleArray(array)
@@ -407,6 +411,16 @@ class Game extends React.Component
 				</div>
 			);
 		}
+		else if (this.state.view === VIEW_CHANGELOG)
+		{
+			// Render the changelog.
+			return (
+				<div className="game-container">
+					{this.renderChangeLog()}
+					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon first"/>
+				</div>
+			);
+		}
 		else if (this.state.state === STATE_GAME)
 		{
 			// Render the player list when the game is on.
@@ -441,6 +455,7 @@ class Game extends React.Component
 					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
 					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
 					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+					<a onClick={() => this.setState({view: VIEW_CHANGELOG})} className="changelog-link">Changelog</a>
 
 				</div>
 			);
@@ -509,10 +524,40 @@ class Game extends React.Component
 		}
 	}
 
+	renderChangeLog()
+	{
+		return (
+			<div>
+				<h1>Changelog</h1>
+				<div className="changelog">
+					<code>
+						{this.state.changelog}
+					</code>
+				</div>
+			</div>
+		);
+	}
+
+	fetchChangelog()
+	{
+		var instance = this;
+
+		fetch('/api/changelog')
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(json) {
+				instance.setState({ changelog: json.changelog });
+			})
+			.catch(function(ex) {
+			}
+		);
+	}
+
 	render()
 	{
 		var isLocalHost = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-		
+
 		if (isLocalHost) {
 
 			// Render the full-featured page on the Raspberry Pi (stats and game input).

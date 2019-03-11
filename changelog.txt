@@ -1,0 +1,14 @@
+11/3/2019
+
+Improvements/Changes:
+
+* Highlight button for collecting timestamps of interesting events during a game. Timestamps with links to video are sent in an email after the stream ends.
+* Different XP graph scaling in player stats screen for improved readability.
+* Top win percentage list now has a minimum requirement of 10+ played games.
+* Added changelog to main view.
+
+Bug Fixes:
+
+* Fixed overlapping clocks in game view.
+* Fixed a new player's stats displaying incorrectly after the first game.
+* Fixed a broken XP graph for players with just one game.
