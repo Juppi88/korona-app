@@ -139,8 +139,12 @@ class StatsScreen extends React.Component
 		const players = this.state.stats.players;
 		var data = [];
 
-		// Sort the players by wins.
+		// Sort the players by wins. If the other player has played less than 10 games, favor the
+		// pther one instead. This is to ignore players with 1 game and 100% win percentage.
 		players.sort((a, b) => {
+
+			if (a.totalGames >= 10 && b.totalGames < 10) return -1;
+			if (a.totalGames < 10 && b.totalGames >= 10) return 1;
 			return (b.wins / b.totalGames) - (a.wins / a.totalGames);
 		});
 
@@ -151,7 +155,7 @@ class StatsScreen extends React.Component
 			data.push({name: player.name, wins: player.wins, percentage: 1.0 * (100.0 * player.wins / player.totalGames).toFixed(0)});
 		}
 
-		return this.renderBarChart(350, 180, "#756b91", "Paras voittoprosentti", data, "percentage", "wins");
+		return this.renderBarChart(350, 180, "#756b91", "Paras voittoprosentti, 10+ peliä", data, "percentage", "wins");
 	}
 
 	renderWinsPerPlayer()
