@@ -194,6 +194,17 @@ class PlayerStatsScreen extends React.Component
 			if (histXp < minXP) minXP = histXp;
 		}
 
+		// Don't show any specific stats if the player hasn't played their first game yet.
+		if (player.totalGames === 0) {
+
+			return (
+				<div className="player-stats">
+					{this.renderXpBar(player, 520, 8)}
+					<p>Pelaaja ei ole pelannut yhtään peliä.</p>
+				</div>
+			);
+		}
+
 		return (
 			<div className="player-stats">
 
