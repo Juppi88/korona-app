@@ -247,7 +247,9 @@ class PlayerStatsScreen extends React.Component
 		var players = this.state.stats.players;
 		
 		players.sort((a, b) => {
-			return b.name < a.name;
+			if (a.name < b.name) return -1;
+			if (a.name > b.name) return 1;
+			return 0;
 		});
 
 		var options = [];

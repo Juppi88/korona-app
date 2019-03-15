@@ -1,3 +1,9 @@
+15/3/2019
+
+Bug Fixes:
+
+* Fixed randomly changing order of players in the stats screen list.
+
 11/3/2019
 
 Improvements/Changes:
