@@ -506,6 +506,16 @@ class Game extends React.Component
 				</div>
 			);
 		}
+		else if (this.state.view === VIEW_CHANGELOG)
+		{
+			// Render the changelog.
+			return (
+				<div className="game-container">
+					<ChangelogScreen/>
+					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon first"/>
+				</div>
+			);
+		}
 		else 
 		{
 			return (
