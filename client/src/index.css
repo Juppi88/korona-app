@@ -388,8 +388,8 @@ code {
 
 .changelog {
 	width: 70%;
-	margin: auto;
-	margin-top: 2rem;
+	margin: 2rem auto;
+	
 	text-align: left;
 }
 

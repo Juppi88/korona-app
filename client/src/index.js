@@ -6,6 +6,7 @@ import StatsScreen from './stats-screen.js';
 import PlayerStatsScreen from './player-screen.js';
 import ResultScreen from './result-screen.js';
 import LogScreen from './log-screen.js';
+import ChangelogScreen from './changelog-screen.js';
 import LiveStream from './live-stream.js';
 import PieChart from '@material-ui/icons/PieChart';
 import Person from '@material-ui/icons/Person';
@@ -70,10 +71,7 @@ class Game extends React.Component
 			results: [],
 			previousGame: 0,
 			previousPlayers: [],
-			changelog: '',
 		};
-
-		this.fetchChangelog();
 	}
 
 	shuffleArray(array)
@@ -416,7 +414,7 @@ class Game extends React.Component
 			// Render the changelog.
 			return (
 				<div className="game-container">
-					{this.renderChangeLog()}
+					<ChangelogScreen/>
 					<KeyboardBackspace onClick={() => this.setState({view: VIEW_DEFAULT})} className="stats-icon first"/>
 				</div>
 			);
@@ -523,37 +521,7 @@ class Game extends React.Component
 			);
 		}
 	}
-
-	renderChangeLog()
-	{
-		return (
-			<div>
-				<h1>Changelog</h1>
-				<div className="changelog">
-					<code>
-						{this.state.changelog}
-					</code>
-				</div>
-			</div>
-		);
-	}
-
-	fetchChangelog()
-	{
-		var instance = this;
-
-		fetch('/api/changelog')
-			.then(function(response) {
-				return response.json();
-			})
-			.then(function(json) {
-				instance.setState({ changelog: json.changelog });
-			})
-			.catch(function(ex) {
-			}
-		);
-	}
-
+	
 	render()
 	{
 		var isLocalHost = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
