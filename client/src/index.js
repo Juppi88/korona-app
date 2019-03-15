@@ -516,6 +516,7 @@ class Game extends React.Component
 					<PieChart onClick={() => this.setState({view: VIEW_STATS})} className="stats-icon first"/>
 					<FormatListBulleted onClick={() => this.setState({view: VIEW_LOGS})} className="stats-icon second"/>
 					<Person onClick={() => this.setState({view: VIEW_PLAYER})} className="stats-icon third"/>
+					<a onClick={() => this.setState({view: VIEW_CHANGELOG})} className="changelog-link">Changelog</a>
 
 				</div>
 			);
