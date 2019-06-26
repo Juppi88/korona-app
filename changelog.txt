@@ -1,3 +1,15 @@
+26/6/2019
+
+Improvements/Changes:
+
+* Added player win percentage for recent games (30 days).
+* All-time top win percentages replaced with recent games (30 days) win percentages.
+* Added 'starter win percentage' and 'player wins as starter' stats.
+
+Optimizations:
+
+* Optimized stats generation during startup.
+
 15/3/2019
 
 Bug Fixes:
