@@ -213,11 +213,12 @@ class PlayerStatsScreen extends React.Component
 				<div className="player-stat-list">
 					<div className="list-left">
 						<div>Voittoja: <span>{player.wins} ({(100 * player.wins / player.totalGames).toFixed(0)}%)</span></div>
-						<div>Viimeisin kk: <span>{player.recentWins} ({(player.recentGames !== 0 ? (100 * player.recentWins / player.recentGames).toFixed(0) : 0)}%)</span></div>
+						<div>Kuukausi: <span>{player.recentWins} ({(player.recentGames !== 0 ? (100 * player.recentWins / player.recentGames).toFixed(0) : 0)}%)</span></div>
 					</div>
 					<div className="list-right">
 						<div>Vahvin: <span><span style={{ color: Colours[colours[0].colour]}}>{colourNames[colours[0].colour]}</span> ({(colours[0].games ? 100 * colours[0].wins / colours[0].games : 0).toFixed(0)}%)</span></div>
 						<div>Heikoin: <span><span style={{ color: Colours[colours[3].colour]}}>{colourNames[colours[3].colour]}</span> ({(colours[3].games ? 100 * colours[3].wins / colours[3].games : 0).toFixed(0)}%)</span></div>
+						<div>Aloittajana: <span>{(player.wins !== 0 ? (100 * player.winsAsStarter / player.wins).toFixed(0) : 0)}%</span></div>
 					</div>
 				</div>
 
@@ -227,7 +228,7 @@ class PlayerStatsScreen extends React.Component
 					<YAxis yAxisId="left" allowDecimals={false} domain={[0, 'auto']} />
 					<YAxis yAxisId="right" orientation="right" allowDecimals={false} domain={[Math.max(0, Math.floor(minXP) - 1), Math.ceil(maxXP) + 1]} />
 					<Tooltip/>
-					<Legend wrapperStyle={{ bottom: -8 }}/>
+					<Legend wrapperStyle={{ bottom: -18 }}/>
 					<Line yAxisId="left" type="linear" dataKey="level" stroke="#8884d8" activeDot={{r: 8}}/>
 					<Line yAxisId="right" type="linear" dataKey="xp" stroke="#82ca9d" />
 				</LineChart>

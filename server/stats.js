@@ -239,7 +239,8 @@ module.exports.addName = function(name)
 					totalGames: 0,
 					wins: 0,
 					recentGames: 0,
-					recentWins: 0
+					recentWins: 0,
+					winsAsStarter: 0
 				});
 			}
 		});
@@ -424,6 +425,7 @@ function cacheStats()
 				stats.winsYellow = getAtIndex(row, 1);
 				stats.winsGreen = getAtIndex(row, 2);
 				stats.winsBlue = getAtIndex(row, 3);
+				stats.winsByStarter = 0;
 			}
 		}
 	);
@@ -445,6 +447,7 @@ function cacheStats()
 					stats.players[i].allTimeXp = 0;
 					stats.players[i].recentGames = 0;
 					stats.players[i].recentWins = 0;
+					stats.players[i].winsAsStarter = 0;
 				}
 
 				// Now get per-player stats.
@@ -498,6 +501,7 @@ function cachePlayerStats(db)
 						player.gamesYellow = getAtIndex(row, 6);
 						player.gamesGreen = getAtIndex(row, 7);
 						player.gamesBlue = getAtIndex(row, 8);
+						player.winsAsStarter = 0;
 
 						player.totalGames = player.gamesRed + player.gamesYellow + player.gamesGreen + player.gamesBlue;
 						player.wins = player.winsRed + player.winsYellow + player.winsGreen + player.winsBlue;
@@ -620,6 +624,13 @@ function recordGameXp(players, gameStarted)
 				player.xp -= player.xpToNextLevel;
 				player.level++;
 				player.xpToNextLevel = expRequiredToLevel(player.level + 1);
+			}
+
+			// Increment player as starter stats.
+			if (players[i].isStarter) {
+
+				stats.winsByStarter++;
+				player.winsAsStarter++;
 			}
 		}
 
