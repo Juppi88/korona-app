@@ -228,7 +228,7 @@ class PlayerStatsScreen extends React.Component
 					<YAxis yAxisId="left" allowDecimals={false} domain={[0, 'auto']} />
 					<YAxis yAxisId="right" orientation="right" allowDecimals={false} domain={[Math.max(0, Math.floor(minXP) - 1), Math.ceil(maxXP) + 1]} />
 					<Tooltip/>
-					<Legend wrapperStyle={{ bottom: -18 }}/>
+					<Legend align="center" wrapperStyle={{ top: 22 }}/>
 					<Line yAxisId="left" type="linear" dataKey="level" stroke="#8884d8" activeDot={{r: 8}}/>
 					<Line yAxisId="right" type="linear" dataKey="xp" stroke="#82ca9d" />
 				</LineChart>
