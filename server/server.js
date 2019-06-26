@@ -31,7 +31,7 @@ app.get("/api/changelog", (req, res) => {
 
 app.get("/api/names", (req, res) => {
 
-	var names = stats.getNames();
+	var names = stats.getNames(null);
 	res.send({ names: names });
 });
 
@@ -41,7 +41,7 @@ app.put("/api/names", (req, res) => {
 	stats.addName(req.body.name);
 
 	// Return the updated list of names.
-	var names = stats.getNames();
+	var names = stats.getNames(null);
 	res.send({ names: names });
 });
 
@@ -357,7 +357,7 @@ function sendHighlightEmail(replyToEmail, streamLink, highlights)
 stats.setupDatabase();
 
 // Cache the list of names.
-stats.getNames();
+stats.getNames(null);
 
 // Cache changelog.
 fs.readFile('./changelog.txt', 'utf8', function(err, data) {

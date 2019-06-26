@@ -16,13 +16,20 @@ const COLOUR_YELLOW = 1;
 const COLOUR_GREEN = 2;
 const COLOUR_BLUE = 3;
 
+const RECENT_GAME_DAYS = 30; // Recent games include a month
+
 var stats = {};
 var logs = [];
+
+var lastDailyRefreshDate = 0; // Used to refresh daily stats (e.g. recent games) at least once a day.
 
 // --------------------------------------------------------------------------------
 
 module.exports.getStats = function()
 {
+	// Refresh daily stats (e.g. recent games).
+	refreshDailyStats();
+
 	return stats;
 }
 
@@ -75,19 +82,26 @@ module.exports.setupDatabase = function()
 	db.close();
 
 	// Cache stats and logs to speed up backend requests.
-	module.exports.getNames();
+	module.exports.getNames(
 
-	setTimeout(() => {
+		() => {
+			// Wait for the names list to be resolved before loading game history and calculating
+			// player stats.
+			console.log("Calculating player stats and refreshing game history from database...");
 
-		// Wait for the names list to be resolved.
-		// This is a crappy way to do things, but oh well.
-		cacheStats();
-		cacheLogs();
+			var start = process.hrtime();
 
-	}, 2000);
+			cacheStats();
+			cacheLogs();
+
+			// Print performance information.
+			var elapsed = process.hrtime(start);
+			console.log("Calculations took %d ms.", (1000 * elapsed[0] + elapsed[1] / 1000000).toFixed(2));
+		}
+	);
 };
 
-module.exports.getNames = function()
+module.exports.getNames = function(onFinishedCallback)
 {
 	// Return the cached name list.
 	if (names && names.length > 0) {
@@ -119,6 +133,10 @@ module.exports.getNames = function()
 						nameIndices.push({ id: rows[i].id, name: rows[i].name });
 					}
 				}
+			}
+
+			if (onFinishedCallback) {
+				onFinishedCallback();
 			}
 		}
 	);
@@ -220,6 +238,8 @@ module.exports.addName = function(name)
 					gamesBlue: 0,
 					totalGames: 0,
 					wins: 0,
+					recentGames: 0,
+					recentWins: 0
 				});
 			}
 		});
@@ -366,6 +386,9 @@ function updateStats(game, winnerFlags)
 		logs.splice(logs.length - 1, 1);
 	}
 
+	// Refresh per-player recent game stats.
+	refreshRecentGames();
+
 	return xpChanges;
 }
 
@@ -420,6 +443,8 @@ function cacheStats()
 					stats.players[i].xpToNextLevel = expRequiredToLevel(2);
 					stats.players[i].history = [];
 					stats.players[i].allTimeXp = 0;
+					stats.players[i].recentGames = 0;
+					stats.players[i].recentWins = 0;
 				}
 
 				// Now get per-player stats.
@@ -560,7 +585,13 @@ function recordGameXp(players, gameStarted)
 		const player = stats.players[players[i].statsIndex];
 		var xpGain = 0;
 
-		xpChanges.push({ name: player.name, isWinner: players[i].isWinner, level: player.level, xp: player.xp, xpGained: 0 });
+		xpChanges.push({
+			name: player.name,
+			isWinner: players[i].isWinner,
+			level: player.level,
+			xp: player.xp,
+			xpGained: 0
+		});
 
 		// Calculate winner XP gain.
 		if (players[i].isWinner) {
@@ -626,7 +657,8 @@ function recordGameXp(players, gameStarted)
 		player.history.push({
 			level: player.level,
 			xp: player.allTimeXp,
-			gameStarted: gameStarted
+			gameStarted: gameStarted,
+			gameWon: (xpGain > 0)
 		});
 	}
 
@@ -686,4 +718,62 @@ function recordGames()
 			}
 		}
 	);
+}
+
+function refreshDailyStats()
+{
+	var today = new Date();
+
+	// Nothing to do here, stats have already been refreshed today.
+	if (today.getDate() == lastDailyRefreshDate) {
+		return;
+	}
+
+	console.log("Daily stats have not been updated today, refreshing...");
+	var start = process.hrtime();
+
+	// Update recent games.
+	refreshRecentGames();
+
+	lastDailyRefreshDate = today.getDate();
+
+	// Print performance information.
+	var elapsed = process.hrtime(start);
+	console.log("Refresh took %d ms.", (1000 * elapsed[0] + elapsed[1] / 1000000).toFixed(2));
+}
+
+function refreshRecentGames()
+{
+	var now = Date.now();
+	var recentGameLimit = (now / 1000) - RECENT_GAME_DAYS * 24 * 60 * 60;
+
+	for (var i = 0, c = stats.players.length; i < c; i++) {
+
+		const player = stats.players[i];
+
+		player.recentWins = 0;
+		player.recentGames = 0;
+
+		if (player.history.length == 0) {
+			continue;
+		}
+
+		// Go through player's history from newest to oldest games.
+		for (var j = player.history.length - 1; j >= 0; j--) {
+
+			const game = player.history[j];
+
+			if (game.gameStarted < recentGameLimit) {
+				// The history games are sorted by date, so when we reach a game that's no longer
+				// recent, we've collected all recent games.
+				break;
+			}
+
+			player.recentGames++;
+
+			if (game.gameWon) {
+				player.recentWins++;
+			}
+		}
+	}
 }

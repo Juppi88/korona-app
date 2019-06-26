@@ -143,19 +143,19 @@ class StatsScreen extends React.Component
 		// pther one instead. This is to ignore players with 1 game and 100% win percentage.
 		players.sort((a, b) => {
 
-			if (a.totalGames >= 10 && b.totalGames < 10) return -1;
-			if (a.totalGames < 10 && b.totalGames >= 10) return 1;
-			return (b.wins / b.totalGames) - (a.wins / a.totalGames);
+			if (a.recentGames >= 10 && b.recentGames < 10) return -1;
+			if (a.recentGames < 10 && b.recentGames >= 10) return 1;
+			return (b.recentWins / b.recentGames) - (a.recentWins / a.recentGames);
 		});
 
 		// Collect the data of at most 5 players.
 		for (var i = 0, c = Math.min(5, players.length); i < c; i++) {
 
 			const player = players[i];
-			data.push({name: player.name, wins: player.wins, percentage: 1.0 * (100.0 * player.wins / player.totalGames).toFixed(0)});
+			data.push({name: player.name, wins: player.recentWins, percentage: 1.0 * (100.0 * player.recentWins / player.recentGames).toFixed(0)});
 		}
 
-		return this.renderBarChart(350, 180, "#756b91", "Paras voittoprosentti, 10+ peliä", data, "percentage", "wins");
+		return this.renderBarChart(350, 180, "#756b91", "Voittoprosentti (1kk, 10+ peliä)", data, "percentage", "wins");
 	}
 
 	renderWinsPerPlayer()
