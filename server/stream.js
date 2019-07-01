@@ -87,7 +87,7 @@ module.exports.fetchStreamInfo = function(onStreamInfoReceived)
 
 module.exports.getStreamUrl = function()
 {
-	return "https://gaming.youtube.com/watch?v=" + streamId;
+	return "https://www.youtube.com/watch?v=" + streamId;
 }
 
 module.exports.getStreamTitle = function()
