@@ -329,7 +329,7 @@ function sendHighlightEmail(replyToEmail, streamLink, highlights)
 		var h = Math.floor(t / 60);
 		var m = t - 60 * h;
 
-		message += " * " + h.toString() + ":" + m.toString().padStart(2, '0') + " - " + streamLink + "?t=" + t + "\n";
+		message += " * " + h.toString() + ":" + m.toString().padStart(2, '0') + " - " + streamLink + "&t=" + t + "\n";
 	}
 
 	var d = new Date();
